@@ -123,8 +123,8 @@
 	</select>
 </div>
 <div id="simulator-container" class="android">
-	<%= image_tag "#{ENV['ASSET_HOST']}/images/mtn/dumb_phone.png", id: 'feature-img', class: "phone-img" %>
-	<%= image_tag "#{ENV['ASSET_HOST']}/images/mtn/pixel3xl.webp", id: 'android-img', class: "phone-img" %>
+	<img src="dumb_phone.png" id="feature-img" class="phone-img" />
+	<img src="pixel3xl.webp" id="android-img" class="phone-img" />
 	<div id="screen">
 		<div id="ussd-box">
 			<div id="menu-text">Dial Short Code</div>
@@ -142,12 +142,12 @@
 	let channels = [], menu = null, child_menus = [], place = 0, vars = {};
 
 	function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
-	function loadChannel() { load("/api/channels/", onLoadChannel); }
+	function loadChannel() { load("https://stage.usehover.com/api/channels/", onLoadChannel); }
 	function loadMenu(id) {
 		load("/api/menus/" + id, onLoadMenu);  
 		loadChildren(id);
 	}
-	function loadChildren(menu_id) { load("/api/menus?parent_id=" + menu_id, onLoadChildren); }
+	function loadChildren(menu_id) { load("https://stage.usehover.com/api/menus?parent_id=" + menu_id, onLoadChildren); }
 
 	function onLoadChannel(result) { channels = result.data.map(function(d) { return d.attributes; }); }
 
