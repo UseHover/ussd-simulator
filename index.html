@@ -1,0 +1,240 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+<style>
+	#style-selector { margin-top: 100px; }
+	#phone-type {
+		background: transparent;
+		min-width: 150px;
+		padding: 8px;
+		border-radius: 2px;
+		margin-left: 10px;
+	}
+	option { padding: 8px; }
+
+	#simulator-container {
+		position: absolute;
+		max-height: 100%;
+		margin: 24px 0;
+		color: white;
+	}
+	#simulator-container.android {
+		height: 800px;
+		width: 338px;
+	}
+	#simulator-container.feature {
+		height: 700px;
+		width: 296px;
+	}
+	.phone-img {
+		position: absolute;
+		max-height: 100%;
+		max-width: 100%;
+	}
+	.android #feature-img { display: none; }
+	.feature #android-img { display: none; }
+
+	#screen { position: absolute; }
+	.android #screen {
+		width: 287px;
+		height: 553px;
+		margin: 55px 27px;
+		background: #303030;
+		border-radius: 6px
+	}
+	.feature #screen {
+		width: 241px;
+		height: 320px;
+		margin: 67px 28px;
+	}
+
+	#ussd-box { position: absolute; }
+	.android #ussd-box {
+		top: 45%;
+		transform: translateY(-50%);
+		width: 211px;
+		padding: 22px 23px 8px 23px;
+		margin: 24px 15px;
+		border-radius: 4px;
+		background: #424242;
+		box-shadow: 0 22px 38px #00000042;
+		color: #FFFFFFB3;
+		font-family: "Roboto", sans-serif;
+	}
+	.feature #ussd-box {
+		top: 45%;
+		transform: translateY(-50%);
+		width: 191px;
+		padding: 10px 14px;
+		margin: 24px  11px 11px;
+		border-radius: 4px;
+		background: linear-gradient(#505050, #171717);
+		font-family: "Nokia Regular", sans-serif;
+	}
+
+	#menu-text { 
+		white-space: pre-line; 
+		line-height: 18px;
+		margin-bottom: 16px; 
+	}
+	#menu-entry { 
+		display: block;
+		max-width: 100%;
+		border: none; 
+		outline: none; 
+		font-size: 16px; 
+		padding-bottom: 5px;
+		background: transparent;
+		color: white;
+		border-bottom: 1px solid #FFFFFF61;
+		font-family: "Roboto", sans-serif; 
+	}
+	.android #menu-entry { caret-color: #FF4C00; }
+
+	#inline-error { color: red; margin: 8px 0; }
+	.android #inline-error { color: #FFFFFF61; }
+	
+	#buttons { float: right; }
+	.android .dialog-btn {
+		height: 36px;
+		padding: 11px 17px;
+		background: transparent;
+		text-transform: uppercase;
+		font-family: "Roboto", sans-serif;
+		border-radius: 2px;
+		border: none;
+		color: #FF4C00;
+	}
+	.feature .dialog-btn {
+		height: 30px;
+		background: linear-gradient(#505050, #171717);
+		font-family: "Nokia Regular", sans-serif;
+		box-shadow: 0 2px 2px #000000;
+		border-radius: 4px;
+		border: none;
+		color: white;
+	}
+</style>
+
+<div id="style-selector">
+	<select name="phone-type" id="phone-type">
+	    <option value="android" selected="selected">Android</option>
+	    <option value="feature">Feature Phone</option>
+	    <!-- <option value="kaios">KaiOS</option> -->
+	</select>
+</div>
+<div id="simulator-container" class="android">
+	<%= image_tag "#{ENV['ASSET_HOST']}/images/mtn/dumb_phone.png", id: 'feature-img', class: "phone-img" %>
+	<%= image_tag "#{ENV['ASSET_HOST']}/images/mtn/pixel3xl.webp", id: 'android-img', class: "phone-img" %>
+	<div id="screen">
+		<div id="ussd-box">
+			<div id="menu-text">Dial Short Code</div>
+			<input id="menu-entry" name="menu-entry"></input>
+			<p id="inline-error"></p>
+			<div id="buttons">
+				<input class="dialog-btn" id="cancel-btn" name="cancel-btn" type="button" value="Cancel"></input>
+				<input class="dialog-btn" id="ok-btn" name="ok-btn" type="button" value="Send"></input>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	let channels = [], menu = null, child_menus = [], place = 0, vars = {};
+
+	function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
+	function loadChannel() { load("/api/channels/", onLoadChannel); }
+	function loadMenu(id) {
+		load("/api/menus/" + id, onLoadMenu);  
+		loadChildren(id);
+	}
+	function loadChildren(menu_id) { load("/api/menus?parent_id=" + menu_id, onLoadChildren); }
+
+	function onLoadChannel(result) { channels = result.data.map(function(d) { return d.attributes; }); }
+
+	function onLoadMenu(result) {
+		menu = result.data.attributes;
+		$("#menu-text").text(getText(menu));
+		$("#menu-entry").val("");
+		$("#menu-entry").toggle(menu.response_type !== "info");
+	}
+
+	function onLoadChildren(result) {
+		child_menus = result.data.map(function(d) { return d.attributes; });
+	}
+
+	function onError(msg) { 
+		$("#inline-error").text(msg);
+		$("#menu-entry").val("");
+		$("#menu-entry").focus();
+	}
+	function onCancel() { 
+		place = 0;
+		$("#menu-text").text("Dial Short Code");
+		$("#menu-entry").show();
+		$("#cancel-btn").show();
+		onError("");
+	}
+
+	function getText(menu) {
+		let display_text = menu.text;
+		for (const property in vars) {
+			display_text = display_text.replace("(?<" + property + ">)", vars[property]);
+		}
+		return display_text;
+	}
+
+	function onOk() {
+		$("#inline-error").text("");
+		if (place === 0) { loadRootMenu();
+		} else { submitResponse(); }
+		$("#menu-entry").focus();
+	}
+
+	function loadRootMenu() {
+		if (channelExists()) {
+			place = 1;
+			loadMenu(channelExists().first_menu_id);
+		} else {
+			onError("Short code does not exist");
+		}
+	}
+
+	function submitResponse() {
+		if ((menu.response_type === "choice" || menu.response_type === "info") && submenuExists()) {
+			loadMenu(submenuExists().id);
+		} else if ($("#menu-entry").val().trim() === "0" && menu.response_type === "choice" && !submenuExists() && menu.parent_menu_id !== null) {
+			loadMenu(menu.parent_menu_id);
+		} else if (menu.response_type === "variable") {
+			submitVar(menu.response_var, $("#menu-entry").val().trim());
+		} else { onError("Invalid option"); }
+	}
+
+	function channelExists() { return channels.find(el => el.root_code === $("#menu-entry").val().trim()); }
+	function submenuExists() { return child_menus.find(function(el) { return el.parent_index.toString() === $("#menu-entry").val().trim(); }); }
+
+	function submitVar(key, entry) {
+		if (!menu.valid_response_regex || entry.match(menu.valid_response_regex)) {
+			vars[key] = entry;
+			if (child_menus.length > 0) {
+				loadMenu(child_menus[0].id);
+			} else {
+				$("#menu-text").text("Request submitted, please wait for response.");
+				$("#menu-entry").hide();
+				$("#cancel-btn").hide();
+				$("#ok-btn").click(onCancel);
+			}
+		} else { onError("Invalid entry"); }
+	}
+
+	function setStyle(e) {
+		$("#simulator-container").removeClass("feature").removeClass("android").addClass(e.target.value);
+		$("#menu-entry").focus();
+	}
+
+	loadChannel();
+	$("#phone-type").change(setStyle);
+	$("#ok-btn").click(onOk);
+	$("#menu-entry").keypress(function (e) { if (e.which == 13) { onOk(); } });
+	$("#cancel-btn").click(onCancel);
+	$("#menu-entry").focus();
+</script>
