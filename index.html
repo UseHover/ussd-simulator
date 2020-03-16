@@ -33,7 +33,7 @@
 	.android #feature-img { display: none; }
 	.feature #android-img { display: none; }
 
-	#screen { position: absolute; }
+	#screen,.keyboard { position: relative; }
 	.android #screen {
 		width: 287px;
 		height: 553px;
@@ -44,7 +44,32 @@
 	.feature #screen {
 		width: 241px;
 		height: 320px;
-		margin: 67px 28px;
+		margin: 67px 28px 54px auto;
+	}
+	.feature .keyboard {
+		width: 276px;
+		height: 240px;
+		margin: 17px 10px;
+	}
+
+	.feature .keyboard .keys {
+		width: 100%;
+		height: 100%;
+	}
+
+	.feature .keyboard .keys .keycolumn {
+		display: inline-block;
+		width: 87px;
+	}
+
+	.feature .keyboard .keys .key {
+		width: 87px;
+		height: 37px;
+	}
+
+	.feature .keyboard .keys .key.press {
+		background-color: orange;
+		opacity: 0.2;
 	}
 
 	#ussd-box { position: absolute; }
@@ -136,6 +161,34 @@
 			</div>
 		</div>
 	</div>
+	<div class="keyboard">
+		<div class="keys">
+			<div class="keycolumn">
+				<div class="key"></div>
+				<div class="key" function="ok"></div>
+				<div class="key" key="1"></div>
+				<div class="key" key="4"></div>
+				<div class="key" key="7"></div>
+				<div class="key" key="*"></div>
+			</div>
+			<div class="keycolumn">
+				<div class="key"></div>
+				<div class="key"></div>
+				<div class="key" key="2"></div>
+				<div class="key" key="5"></div>
+				<div class="key" key="8"></div>
+				<div class="key" key="0"></div>
+			</div>
+			<div class="keycolumn">
+				<div class="key" function="backspace"></div>
+				<div class="key" function="cancel"></div>
+				<div class="key" key="3"></div>
+				<div class="key" key="6"></div>
+				<div class="key" key="9"></div>
+				<div class="key" key="#"></div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script>
@@ -144,7 +197,7 @@
 	function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
 	function loadChannel() { load("https://stage.usehover.com/api/channels/", onLoadChannel); }
 	function loadMenu(id) {
-		load("/api/menus/" + id, onLoadMenu);  
+		load("https://stage.usehover.com/api/menus/" + id, onLoadMenu);  
 		loadChildren(id);
 	}
 	function loadChildren(menu_id) { load("https://stage.usehover.com/api/menus?parent_id=" + menu_id, onLoadChildren); }
@@ -155,7 +208,11 @@
 		menu = result.data.attributes;
 		$("#menu-text").text(getText(menu));
 		$("#menu-entry").val("");
-		$("#menu-entry").toggle(menu.response_type !== "info");
+		if (menu.response_type == "info") {
+			$("#menu-entry").hide();
+			$("#cancel-btn").hide();
+			$("#ok-btn").click(onCancel);
+		}
 	}
 
 	function onLoadChildren(result) {
@@ -231,10 +288,39 @@
 		$("#menu-entry").focus();
 	}
 
+	function keyboardInteraction(e) {
+		e.currentTarget.classList.add("press");
+		if (e.currentTarget.attributes.key)  {
+			newInput = $("#menu-entry").val() + e.currentTarget.attributes.key.value;
+			$("#menu-entry").val(newInput);
+		}
+
+		if (e.currentTarget.attributes.function){
+			functionButton = e.currentTarget.attributes.function.value;
+			switch (functionButton) {
+				case "ok":
+					$("#ok-btn").click();
+					break;
+				case "cancel":
+					$("#cancel-btn").click();
+					break;
+				case "backspace":
+					$("#menu-entry").val($("#menu-entry").val().slice(0,-1));
+					break;
+				default:
+					console.log("Button function not defined:", functionButton);
+			}
+		}
+	 }
+
 	loadChannel();
 	$("#phone-type").change(setStyle);
 	$("#ok-btn").click(onOk);
 	$("#menu-entry").keypress(function (e) { if (e.which == 13) { onOk(); } });
+	$(".key").mousedown(keyboardInteraction);
+	 $(".key").mouseup(function(e) {
+		e.currentTarget.classList.remove("press");
+	 });
 	$("#cancel-btn").click(onCancel);
 	$("#menu-entry").focus();
 </script>
