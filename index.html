@@ -214,15 +214,6 @@
 
 <div id="outer-container" class="android">
 	<div id="meta-controls">
-		<section>
-			<select name="phone-type" id="phone-type">
-				<option value="android" selected="selected">Android</option>
-				<option value="feature">Feature Phone</option>
-				<!-- <option value="kaios">KaiOS</option> -->
-			</select>
-			<button id="fullscreen" class="fullscreen-btn"><img src="fullscreen.svg" id="fullscreen-img" /></button>
-			<button id="close" class="fullscreen-btn"><img src="close.svg" id="close-img" /></button>
-		</section>
 		<section class="accordion">
 			<label for="accordion-toggle">
 				<h4>Collections simulation &raquo;</h4>
@@ -244,6 +235,15 @@
 					<input id="collections-sim-btn" name="collections-sim-btn" type="button" value="Simulate"></input>
 				</div>
 			</div>
+		</section>
+		<section>
+			<select name="phone-type" id="phone-type">
+				<option value="android" selected="selected">Android</option>
+				<option value="feature">Feature Phone</option>
+				<!-- <option value="kaios">KaiOS</option> -->
+			</select>
+			<button id="fullscreen" class="fullscreen-btn"><img src="fullscreen.svg" id="fullscreen-img" /></button>
+			<button id="close" class="fullscreen-btn"><img src="close.svg" id="close-img" /></button>
 		</section>
 	</div>
 	<div id="simulator-container">
@@ -446,6 +446,7 @@
 
 		msg = "".concat("You have approved debit of UGX ", amount, " initiated by ", merchantId, ". Transaction ID ", Date.now());
 		$("#menu-text").text(msg);
+		$("#inline-error").text("");
 		$("#menu-entry").hide();
 		$("#cancel-btn").hide();
 		$("#ok-btn").click(onCancel);
