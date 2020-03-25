@@ -1,6 +1,16 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 <style>
+	body {
+		font-family: "Roboto", sans-serif;
+	}
+	label,input {
+		font-size: 16px;
+		font-family: "Roboto", sans-serif;
+	}
+	section {
+		margin-bottom: 1em;
+	}
 	#outer-container { position: relative; }
 	#outer-container.android {
 		height: 800px;
@@ -23,6 +33,39 @@
 		background: transparent;
 		border-radius: 4px;
 	}
+
+	.accordion label {
+		cursor: pointer;
+	}
+
+	.accordion-content {
+		display: none;
+		opacity: 0;
+	}
+
+	input#accordion-toggle {
+		display: none;
+		position: relative;
+	}
+
+	#accordion-toggle:checked ~ .accordion-content {
+		display: block;
+		opacity: 1;
+	}
+
+	.form-input {
+		width: 100%;
+		margin-bottom: .5em;
+	}
+
+	.form-input > input {
+		float:right;
+	}
+
+	.form-input > input[type=button] {
+		float: none;
+	}
+
 	.fullscreen #meta-controls select, .fullscreen #fullscreen { display: none; }
 	#close { display: none; border: none; }
 	.fullscreen #close { 
@@ -132,21 +175,19 @@
 		line-height: 18px;
 		margin-bottom: 16px; 
 	}
-	#menu-entry { 
+	input#menu-entry {
 		display: block;
 		max-width: 100%;
 		border: none; 
-		outline: none; 
-		font-size: 16px; 
+		outline: none;
 		padding-bottom: 5px;
 		background: transparent;
 		color: white;
 		border-bottom: 1px solid #FFFFFF61;
-		font-family: "Roboto", sans-serif; 
 	}
 	.android #menu-entry, .fullscreen #menu-entry { caret-color: #FF4C00; }
 
-	#inline-error { color: red; margin: 8px 0; }
+	#inline-error, #collections-error { color: red; margin: 8px 0; }
 	.android #inline-error, .fullscreen #inline-error { color: #FFFFFF61; }
 	
 	.android #buttons, .fullscreen #buttons { position: absolute; right: 0; }
@@ -173,13 +214,37 @@
 
 <div id="outer-container" class="android">
 	<div id="meta-controls">
-		<select name="phone-type" id="phone-type">
-		    <option value="android" selected="selected">Android</option>
-		    <option value="feature">Feature Phone</option>
-		    <!-- <option value="kaios">KaiOS</option> -->
-		</select>
-		<button id="fullscreen" class="fullscreen-btn"><img src="fullscreen.svg" id="fullscreen-img" /></button>
-		<button id="close" class="fullscreen-btn"><img src="close.svg" id="close-img" /></button>
+		<section class="accordion">
+			<label for="accordion-toggle">
+				<h4>Collections simulation &raquo;</h4>
+			</label>
+			<input type="checkbox" id="accordion-toggle"/>
+			<div class="accordion-content">
+				<div class="form-input">
+					<label for="merchant-id">Merchant ID</label>
+					<input name="merchant-id" id="merchant-id">
+				</div>
+				<div class="form-input">
+					<label for="amount">Amount</label>
+					<input name="amount" id="amount" type="number" min="0">
+				</div>
+				<div class="form-input">
+					<p id="collections-error"></p>
+				</div>
+				<div class="form-input">
+					<input id="collections-sim-btn" name="collections-sim-btn" type="button" value="Simulate"></input>
+				</div>
+			</div>
+		</section>
+		<section>
+			<select name="phone-type" id="phone-type">
+				<option value="android" selected="selected">Android</option>
+				<option value="feature">Feature Phone</option>
+				<!-- <option value="kaios">KaiOS</option> -->
+			</select>
+			<button id="fullscreen" class="fullscreen-btn"><img src="fullscreen.svg" id="fullscreen-img" /></button>
+			<button id="close" class="fullscreen-btn"><img src="close.svg" id="close-img" /></button>
+		</section>
 	</div>
 	<div id="simulator-container">
 		<img src="dumb_phone.png" id="feature-img" class="phone-img" />
@@ -359,6 +424,34 @@
 		}
 	 }
 
+	 function collectionsSimulator(){
+		$("#collections-error").text("");
+		$("#menu-entry").val("");
+		merchantId = $("#merchant-id").val();
+		amount = $("#amount").val();
+
+		if (merchantId == "" && amount == ""){
+			$("#collections-error").text("Fill out the merchant ID and amount before running the simulation");
+			return
+		}
+		msg = "".concat("Merchant ",merchantId, " has initiated a debit of UGX ", amount, " from your MM account. Enter PIN")
+
+		$("#menu-text").text(msg);
+		$("#ok-btn").click(showCollectionsApproval);
+	 }
+
+	 function showCollectionsApproval() {
+		merchantId = $("#merchant-id").val();
+		amount = $("#amount").val();
+
+		msg = "".concat("You have approved debit of UGX ", amount, " initiated by ", merchantId, ". Transaction ID ", Date.now());
+		$("#menu-text").text(msg);
+		$("#inline-error").text("");
+		$("#menu-entry").hide();
+		$("#cancel-btn").hide();
+		$("#ok-btn").click(onCancel);
+	 }
+
 	loadChannel();
 	$("#phone-type").change(setStyle);
 	$(".fullscreen-btn").click(toggleFullscreen);
@@ -370,4 +463,5 @@
 	 });
 	$("#cancel-btn").click(onCancel);
 	$("#menu-entry").focus();
+	$("#collections-sim-btn").click(collectionsSimulator);
 </script>
