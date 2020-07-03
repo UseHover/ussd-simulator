@@ -1,15 +1,4 @@
-body {
-	font-family: "Roboto", sans-serif;
-}
-label,input {
-	font-size: 16px;
-	font-family: "Roboto", sans-serif;
-}
-section {
-	margin-bottom: 1em;
-}
-
-#outer-container { position: relative; }
+#outer-container { position: relative; margin: 0 55px; }
 #outer-container.android {
 	height: 800px;
 	width: 338px;
@@ -23,65 +12,13 @@ section {
 	height: 100%;
 }
 
-#meta-controls { margin-top: 100px; width: 100%; }
-#meta-controls button { 
-	position: absolute;
-	right: 8px; 
-	top: 8px;
-	background: transparent;
-	border-radius: 4px;
-}
-
-.accordion label {
-	cursor: pointer;
-}
-
-.accordion-content {
-	display: none;
-	opacity: 0;
-}
-
-.accordion-toggle:checked ~ .accordion-content {
-	display: block;
-	opacity: 1;
-}
-
-.form-input {
-	width: 100%;
-	margin-bottom: .5em;
-}
-
-.form-input > input {
-	float:right;
-}
-
-.form-input > input[type=button] {
-	float: none;
-}
-
-.fullscreen #meta-controls select { display: none; }
-#close-btn { display: none; border: none; }
-.fullscreen #close-btn { 
-	display: block;
-	position: fixed; 
-	z-index: 10000;
-}
-
-#phone-type {
-	background: transparent;
-	min-width: 150px;
-	padding: 8px;
-	border-radius: 2px;
-	margin: 8px 8px 8px 16px;
-}
-option { padding: 8px; }
-
 #simulator-container {
 	position: relative;
 	height: 100%;
 	width: 100%;
 	margin: 24px 0;
 	color: white;
+	font-family: "Roboto", sans-serif;
 }
 
 .phone-img {

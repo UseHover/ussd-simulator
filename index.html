@@ -1,97 +1,109 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css">
-<link rel="stylesheet" href="./switch.css">
-
-<div id="outer-container" class="android">
-	<div id="page-header">
-		<h1>USSD Simulator</h1>
-		<h6></h6>
-	</div>
-	<div id="meta-controls">
-		<div>
-			<h4>Registered user simulation</h4>
-			<label class="pure-material-switch" for="registered-toggle">
-				<input id="registered-toggle" class="accordion-toggle" type="checkbox">
-				<div class="toggle round"></div>
-			</label>
-		</div>
-		<div class="accordion">
-			<h4>Collections simulation</h4>
-			<label class="pure-material-switch" for="collections-toggle">
-				<input id="collections-toggle" class="accordion-toggle" type="checkbox">
-				<div class="toggle round"></div>
-				<div class="accordion-content">
-					<div class="form-input">
-						<label for="merchant-id">Merchant ID</label>
-						<input name="merchant-id" id="merchant-id">
-					</div>
-					<div class="form-input">
-						<label for="amount">Amount</label>
-						<input name="amount" id="amount" type="number" min="0">
-					</div>
-					<div class="form-input">
-						<p id="collections-error"></p>
-					</div>
-					<div class="form-input">
-						<input id="collections-sim-btn" name="collections-sim-btn" type="button" value="Simulate"></input>
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>USSD Simulator</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+		<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+		<link rel="stylesheet" href="./style.css">
+		<link rel="stylesheet" href="./meta.css">
+		<link rel="stylesheet" href="./switch.css">
+		<link rel="stylesheet" href="./select.css">
+	</head>
+	<body>
+		<div id="outer-container" class="android">
+			<div id="page-header">
+				<h1>USSD Simulator</h1>
+				<h6></h6>
+			</div>
+			<div id="meta-controls">
+				<div>
+					<h4>Registered user simulation</h4>
+					<label class="switch" for="registered-toggle">
+						<input id="registered-toggle" class="toggle-box" type="checkbox"/>
+						<div class="toggle-img-div"><div class="toggle-img round"></div></div>
+					</label>
+				</div>
+				<div class="toggle">
+					<h4>Collections simulation</h4>
+					<label class="switch" for="collections-toggle">
+						<input id="collections-toggle" class="toggle-box" type="checkbox"/>
+						<div class="toggle-img-div"><div class="toggle-img round"></div></div>
+						<div class="toggle-content">
+							<div class="labeled-input">
+								<label for="merchant-id" class="meta label">Merchant ID</label>
+								<input name="merchant-id" id="merchant-id" class="meta input">
+							</div>
+							<div class="labeled-input">
+								<label for="amount" class="meta label">Amount</label>
+								<input name="amount" id="amount" type="number" min="0" class="meta input">
+							</div>
+							<p id="collections-error"></p>
+							<input id="collections-sim-btn" name="collections-sim-btn" type="button" value="Simulate USSD push"  class="meta button"></input>
+						</div>
+					</label>
+				</div>
+				<div>
+					<div class="labeled-input select2Dropdown">
+						<label for="phone-type" class="meta label"><h4>Device</h4></label>
+						<select name="phone-type" id="phone-type" class="meta select" 
+							onclick="$('#phone-type-val').val($(this).find('option:selected').text());">
+							<option value="android" selected="selected">Android</option>
+							<option value="feature">Feature Phone</option>
+							<option value="fullscreen">Fullscreen</option>
+							<!-- <option value="kaios">KaiOS</option> -->
+						</select>
 					</div>
 				</div>
-			</label>
-		</div>
-		<section>
-			<select name="phone-type" id="phone-type">
-				<option value="android" selected="selected">Android</option>
-				<option value="feature">Feature Phone</option>
-				<option value="fullscreen">Fullscreen</option>
-				<!-- <option value="kaios">KaiOS</option> -->
-			</select>
-			<!-- <button id="fullscreen-btn" class="fullscreen-btn"><img src="assets/fullscreen.svg" id="fullscreen-img" /></button> -->
-			<button id="close-btn" class="fullscreen-btn"><img src="assets/close.svg" id="close-img" /></button>
-		</section>
-	</div>
-	<div id="simulator-container">
-		<img src="assets/dumb_phone.png" id="feature-img" class="phone-img" />
-		<img src="assets/pixel3xl.webp" id="android-img" class="phone-img" />
-		<div id="screen">
-			<div id="ussd-box">
-				<div id="menu-text">Dial Short Code</div>
-				<input id="menu-entry" name="menu-entry"></input>
-				<p id="inline-error"></p>
-				<div id="buttons">
-					<input class="dialog-btn" id="cancel-btn" name="cancel-btn" type="button" value="Cancel"></input>
-					<input class="dialog-btn" id="ok-btn" name="ok-btn" type="button" value="Send"></input>
+				<button id="close-btn" class="fullscreen-btn"><img src="assets/close.svg" id="close-img" /></button>
+			</div>
+			<div id="simulator-container">
+				<img src="assets/dumb_phone.png" id="feature-img" class="phone-img" />
+				<img src="assets/pixel3xl.webp" id="android-img" class="phone-img" />
+				<div id="screen">
+					<div id="ussd-box">
+						<div id="menu-text">Dial Short Code</div>
+						<input id="menu-entry" name="menu-entry"></input>
+						<p id="inline-error"></p>
+						<div id="buttons">
+							<input class="dialog-btn" id="cancel-btn" name="cancel-btn" type="button" value="Cancel"></input>
+							<input class="dialog-btn" id="ok-btn" name="ok-btn" type="button" value="Send"></input>
+						</div>
+					</div>
+				</div>
+				<div class="keyboard">
+					<div class="keys">
+						<div class="keycolumn">
+							<div class="key"></div>
+							<div class="key" function="ok"></div>
+							<div class="key" key="1"></div>
+							<div class="key" key="4"></div>
+							<div class="key" key="7"></div>
+							<div class="key" key="*"></div>
+						</div>
+						<div class="keycolumn">
+							<div class="key"></div>
+							<div class="key"></div>
+							<div class="key" key="2"></div>
+							<div class="key" key="5"></div>
+							<div class="key" key="8"></div>
+							<div class="key" key="0"></div>
+						</div>
+						<div class="keycolumn">
+							<div class="key" function="backspace"></div>
+							<div class="key" function="cancel"></div>
+							<div class="key" key="3"></div>
+							<div class="key" key="6"></div>
+							<div class="key" key="9"></div>
+							<div class="key" key="#"></div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="keyboard">
-			<div class="keys">
-				<div class="keycolumn">
-					<div class="key"></div>
-					<div class="key" function="ok"></div>
-					<div class="key" key="1"></div>
-					<div class="key" key="4"></div>
-					<div class="key" key="7"></div>
-					<div class="key" key="*"></div>
-				</div>
-				<div class="keycolumn">
-					<div class="key"></div>
-					<div class="key"></div>
-					<div class="key" key="2"></div>
-					<div class="key" key="5"></div>
-					<div class="key" key="8"></div>
-					<div class="key" key="0"></div>
-				</div>
-				<div class="keycolumn">
-					<div class="key" function="backspace"></div>
-					<div class="key" function="cancel"></div>
-					<div class="key" key="3"></div>
-					<div class="key" key="6"></div>
-					<div class="key" key="9"></div>
-					<div class="key" key="#"></div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-<script src="./script.js"></script>
+	</body>
+	<footer>
+		<script src="./script.js"></script>
+	</footer>
+</html>

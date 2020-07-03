@@ -1,0 +1,95 @@
+.select2Dropdown, .select2-selection {
+	width: 100%;
+}
+
+.select2-selection--single {
+	border: none !important;
+}
+
+.select2-selection__rendered {
+	line-height: 48px !important;
+	padding-right: 52px !important;
+	padding-left: 14px !important;
+	border: 1px solid rgba(241, 241, 244, 1) !important;
+}
+
+.select2-container--focus, .select2-selection--single {
+	border: none !important;
+	outline: none !important;
+}
+
+.select2Dropdown, .select2-selection, .select2-selection__rendered {
+	min-height: 48px !important;
+	border-radius: 0 !important;
+}
+
+.select2-selection {
+	background-color: rgba(30, 35, 42, 1) !important;
+}
+
+.select2-selection__placeholder, .select2-search__field::placeholder, .select2-selection__rendered {
+	color: rgba(241, 241, 244, 1) !important;
+}
+
+.select2-selection__arrow {
+	border-left-color: rgba(241, 241, 244, 1) !important;
+}
+
+.select2-selection__arrow b {
+	border-color: rgba(241, 241, 244, 1) transparent transparent !important;
+}
+
+.select2-selection__arrow {
+	height: 48px !important;
+	width: 44px !important;
+	border-left: 1px solid rgba(241, 241, 244, 1);
+}
+.select2-container--open .select2-selection__arrow {
+	height: 52px !important;
+}
+
+.select2-dropdown {
+	border-width: 3px;
+	border-radius: 0;
+	border-color: rgba(241, 241, 244, 1);
+}
+
+.select2-container--open .select2-selection__rendered, .select2-container--open .select2-selection__arrow {
+	border-width: 3px !important;
+}
+.select2-container--open .select2-selection__arrow b {
+	border-color: transparent transparent rgba(241, 241, 244, 1) transparent !important;
+}
+
+.select2-results__options {
+}
+
+.select2-results__option {
+	letter-spacing: 0.2px;
+	background: rgba(30, 35, 42, 1);
+	padding-left: 14px;
+}
+
+.select2-results__option--selectable {
+	height: 52px !important;
+	line-height: 52px;
+}
+
+.select2-results__option:hover, .select2-container--default .select2-results__option--selected {
+	background: rgba(51, 51, 51, 1) 0% 0% no-repeat !important;
+}
+
+.select2-dropdown--below {
+	margin-top: 6px;
+}
+
+.select2-results__option--highlighted {
+	background-color: rgba(51, 51, 51, 1) !important;
+	color: rgba(30, 35, 42, 1) !important;
+}
+
+.select2-results__option--highlighted[aria-selected=true] {
+	color: white !important;
+	background-color: rgba(51, 51, 51, 1) !important;
+	border: none
+}

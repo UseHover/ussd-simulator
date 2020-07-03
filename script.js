@@ -101,7 +101,7 @@ function setStyle(newStyle) {
 
 function toggleFullscreen(e) {
 	setStyle("android");
-	$("#phone-type").val("android");
+	$("#phone-type").val("android").trigger("change");
 }
 
 function keyboardInteraction(e) {
@@ -129,8 +129,9 @@ function keyboardInteraction(e) {
 	}
  }
 
- function collectionsSimulator(){
+function collectionsSimulator(){
 	$("#collections-error").text("");
+	$("#inline-error").text("");
 	$("#menu-entry").val("");
 	merchantId = $("#merchant-id").val();
 	amount = $("#amount").val();
@@ -143,9 +144,10 @@ function keyboardInteraction(e) {
 
 	$("#menu-text").text(msg);
 	$("#ok-btn").click(showCollectionsApproval);
- }
+	$("#menu-entry").focus();
+}
 
- function showCollectionsApproval() {
+function showCollectionsApproval() {
 	merchantId = $("#merchant-id").val();
 	amount = $("#amount").val();
 
@@ -155,9 +157,12 @@ function keyboardInteraction(e) {
 	$("#menu-entry").hide();
 	$("#cancel-btn").hide();
 	$("#ok-btn").click(onCancel);
- }
+	$("#menu-entry").focus();
+}
 
 loadChannel();
+$("#collections-sim-btn").click(collectionsSimulator);
+$("#phone-type").select2({minimumResultsForSearch: Infinity});
 $("#phone-type").change(onStyleChange);
 $(".fullscreen-btn").click(toggleFullscreen);
 $("#ok-btn").click(onOk);
@@ -168,4 +173,3 @@ $(".key").mouseup(function(e) {
  });
 $("#cancel-btn").click(onCancel);
 $("#menu-entry").focus();
-$("#collections-sim-btn").click(collectionsSimulator);
