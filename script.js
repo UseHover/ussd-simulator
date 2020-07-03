@@ -74,13 +74,17 @@ function submitResponse() {
 }
 
 function channelExists() { return channels.find(el => el.root_code === $("#menu-entry").val().trim()); }
-function submenuExists() { return child_menus.find(function(el) { return el.parent_index.toString() === $("#menu-entry").val().trim(); }); }
+function submenuExists() { return child_menus.find(el => el.parent_index.toString() === $("#menu-entry").val().trim()); }
 
 function submitVar(key, entry) {
 	if (!menu.valid_response_regex || entry.match(menu.valid_response_regex)) {
 		vars[key] = entry;
 		if (child_menus.length > 0) {
-			loadMenu(child_menus[0].id); // Choose the right one
+			child = child_menus[0];
+			if (child_menus.length > 1) {
+				child = getStateDependantChildren()[0];
+			}
+			loadMenu(child.id);
 		} else {
 			$("#menu-text").text("Request submitted, please wait for response.");
 			$("#menu-entry").hide();
@@ -88,6 +92,10 @@ function submitVar(key, entry) {
 			$("#ok-btn").click(onCancel);
 		}
 	} else { onError("Invalid entry or missing data"); }
+}
+
+function getStateDependantChildren() {
+	return child_menus.filter(menu => $("#registered-toggle").prop("checked") ? menu.code !== 300 : menu.code === 300);
 }
 
 function onStyleChange(e) { setStyle(e.target.value); }
