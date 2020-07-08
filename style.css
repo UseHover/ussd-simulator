@@ -1,0 +1,142 @@
+#outer-container { position: relative; margin: 0 55px; }
+#outer-container.android {
+	height: 800px;
+	width: 338px;
+}
+#outer-container.feature {
+	height: 700px;
+	width: 296px;
+}
+#outer-container.fullscreen {
+	width: 100%;
+	height: 100%;
+}
+
+#simulator-container {
+	position: relative;
+	height: 100%;
+	width: 100%;
+	margin: 24px 0;
+	color: white;
+	font-family: "Roboto", sans-serif;
+}
+
+.phone-img {
+	position: absolute;
+	max-height: 100%;
+}
+#android-img { width: 341px; }
+.android #feature-img { display: none; }
+.feature #android-img { display: none; }
+.fullscreen .phone-img { display: none; }
+
+#screen, .keyboard { position: absolute; }
+.android #screen {
+	width: 287px;
+	height: 553px;
+	margin: 55px 27px;
+	background: #303030;
+	border-radius: 6px
+}
+.feature #screen {
+	width: 241px;
+	height: 320px;
+	margin: 67px 28px;
+}
+.feature .keyboard {
+	width: 276px;
+	height: 240px;
+	margin: 17px 10px;
+	bottom: 0;
+}
+
+.feature .keyboard .keys {
+	width: 100%;
+	height: 100%;
+}
+
+.feature .keyboard .keys .keycolumn {
+	display: inline-block;
+	width: 87px;
+}
+
+.feature .keyboard .keys .key {
+	width: 87px;
+	height: 37px;
+}
+
+.feature .keyboard .keys .key.press {
+	background-color: orange;
+	opacity: 0.2;
+}
+.fullscreen #screen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background: #303030;
+}
+
+#ussd-box { position: relative; }
+.android #ussd-box, .fullscreen #ussd-box {
+	width: 211px;
+	padding: 22px 23px 48px 23px;
+	margin: 45% auto;
+	border-radius: 4px;
+	background: #424242;
+	box-shadow: 0 22px 38px #00000042;
+	color: #FFFFFFB3;
+	font-family: "Roboto", sans-serif;
+}
+.feature #ussd-box {
+	top: 45%;
+	transform: translateY(-50%);
+	width: 191px;
+	padding: 10px 14px;
+	margin: 24px  11px 11px;
+	border-radius: 4px;
+	background: linear-gradient(#505050, #171717);
+	font-family: "Nokia Regular", sans-serif;
+}
+
+#menu-text { 
+	white-space: pre-line; 
+	line-height: 18px;
+	margin-bottom: 16px; 
+}
+input#menu-entry {
+	display: block;
+	max-width: 100%;
+	border: none; 
+	outline: none;
+	padding-bottom: 5px;
+	background: transparent;
+	color: white;
+	border-bottom: 1px solid #FFFFFF61;
+}
+.android #menu-entry, .fullscreen #menu-entry { caret-color: #FF4C00; }
+
+#inline-error, #collections-error { color: red; margin: 8px 0; }
+.android #inline-error, .fullscreen #inline-error { color: #FFFFFF61; }
+
+.android #buttons, .fullscreen #buttons { position: absolute; right: 0; }
+.android .dialog-btn, .fullscreen .dialog-btn {
+	height: 36px;
+	padding: 11px 17px;
+	background: transparent;
+	text-transform: uppercase;
+	font-family: "Roboto", sans-serif;
+	border-radius: 2px;
+	border: none;
+	color: #FF4C00;
+}
+.feature .dialog-btn {
+	height: 30px;
+	background: linear-gradient(#505050, #171717);
+	font-family: "Nokia Regular", sans-serif;
+	box-shadow: 0 2px 2px #000000;
+	border-radius: 4px;
+	border: none;
+	color: white;
+}

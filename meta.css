@@ -1,0 +1,90 @@
+@import url(https://use.typekit.net/tbv6szo.css);
+
+body {
+	font-family: "canada-type-gibson", sans-serif;
+	font-weight: 500;
+	background: rgba(30, 35, 42, 1);
+	color: rgba(241, 241, 244, 1);
+}
+h1 {
+	font-size: 21px;
+	line-height: 31px;
+}
+h4 {
+	font-size: 13px;
+	line-height: 31px;
+	margin-top: 0px;
+	margin-bottom: 8px;
+}
+label, input, select {
+	font-size: 16px;
+	font-family: "canada-type-gibson", sans-serif;
+	color: rgba(241, 241, 244, 1);
+}
+
+#page-header { margin-top: 55px; }
+
+#meta-controls { margin: 55px 0; width: 100%; }
+
+#meta-controls .toggle-content {
+	display: none;
+	opacity: 0;
+	margin-top: 21px;
+}
+
+#meta-controls .toggle-box:checked ~ .toggle-content {
+	display: block;
+	margin: 21px 0;
+	opacity: 1;
+}
+
+#meta-controls .switch {
+	width: 100%;
+	margin-bottom: 21px;
+}
+
+#meta-controls .labeled-input {
+	width: 100%;
+	margin-bottom: 21px;
+}
+
+#meta-controls .labeled-input .label, #meta-controls .labeled-input .input, #meta-controls .labeled-input .select {
+	width: 100%;
+	display: block;
+	font-size: 13px;
+	box-sizing: border-box;
+}
+
+#meta-controls .labeled-input .label {
+	margin-bottom: 9px;
+}
+
+#meta-controls .labeled-input .input {
+	background: transparent;
+	border: 1px solid rgba(241, 241, 244, 1);
+	border-radius: 0;
+	padding: 14px 21px;
+}
+
+#meta-controls .button { 
+	background: #FF4C00;
+	color: rgba(30, 35, 42, 1);
+	font-weight: 600;
+	font-size: 13px;
+	height: 29px;
+	border-radius: 0;
+	border: none;
+	padding: 9px 21px;
+}
+
+#close-btn { display: none; }
+.fullscreen #close-btn { 
+	display: block;
+	position: fixed;
+	top: 7px;
+	right: 7px;
+	z-index: 10000;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+}
