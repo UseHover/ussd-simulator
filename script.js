@@ -101,7 +101,7 @@ function getStateDependantChildren() {
 	if (child_menus[0].code)
 		return child_menus.filter(menu => $("#registered-toggle").prop("checked") ? menu.code !== 300 : menu.code === 300);
 	else
-		return child_menus;
+		return child_menus.filter(menu => $("#registered-toggle").prop("checked") ? menu.parent_index >= 0 : menu.parent_index < 0);
 }
 
 function onStyleChange(e) { setStyle(e.target.value); }
