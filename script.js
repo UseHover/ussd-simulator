@@ -69,7 +69,7 @@ function submitResponse() {
 		loadMenu(submenuExists().id);
 	} else if ($("#menu-entry").val().trim() === "0" && menu.response_type === "choice" && !submenuExists() && menu.parent_menu_id !== null) { // back
 		loadMenu(menu.parent_menu_id);
-	} else if (menu.response_type === "variable") {
+	} else if (menu.response_type === "variable" || menu.response_type === "pin") {
 		submitVar(menu.response_var, $("#menu-entry").val().trim());
 	} else { onError("Invalid option or missing data"); }
 }
