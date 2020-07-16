@@ -1,4 +1,5 @@
-const root_url = "https://stage.usehover.com";
+const root_url = "https://www.usehover.com";
+// const root_url = "http://localhost:3000";
 let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
 
 function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
@@ -91,11 +92,16 @@ function submitVar(key, entry) {
 			$("#cancel-btn").hide();
 			$("#ok-btn").click(onCancel);
 		}
-	} else { onError("Invalid entry or missing data"); }
+	} else if (menu.valid_response_regex) {
+		onError("Invalid entry, must be format: " + menu.valid_response_regex);
+	} else { onError("Invalid entry or missing data."); }
 }
 
 function getStateDependantChildren() {
-	return child_menus.filter(menu => $("#registered-toggle").prop("checked") ? menu.code !== 300 : menu.code === 300);
+	if (child_menus[0].code)
+		return child_menus.filter(menu => $("#registered-toggle").prop("checked") ? menu.code !== 300 : menu.code === 300);
+	else
+		return child_menus;
 }
 
 function onStyleChange(e) { setStyle(e.target.value); }
@@ -168,16 +174,29 @@ function showCollectionsApproval() {
 	$("#menu-entry").focus();
 }
 
+function initKeyboardShortcuts() {
+	$("#menu-entry").keyup(function (e) { 
+		if (e.which == 13) { onOk(); 
+		} else if (e.which == 27) { onCancel(); }
+	});
+}
+
+function initClickEvents() {
+	$("#collections-sim-btn").click(collectionsSimulator);
+
+	$(".fullscreen-btn").click(toggleFullscreen);
+	$("#phone-type").select2({minimumResultsForSearch: Infinity});
+	$("#phone-type").change(onStyleChange);
+	
+	$("#ok-btn").click(onOk);
+	$("#cancel-btn").click(onCancel);
+	$(".key").mousedown(keyboardInteraction);
+	$(".key").mouseup(function(e) {
+		e.currentTarget.classList.remove("press");
+	 });
+}
+
 loadChannel();
-$("#collections-sim-btn").click(collectionsSimulator);
-$("#phone-type").select2({minimumResultsForSearch: Infinity});
-$("#phone-type").change(onStyleChange);
-$(".fullscreen-btn").click(toggleFullscreen);
-$("#ok-btn").click(onOk);
-$("#menu-entry").keypress(function (e) { if (e.which == 13) { onOk(); } });
-$(".key").mousedown(keyboardInteraction);
-$(".key").mouseup(function(e) {
-	e.currentTarget.classList.remove("press");
- });
-$("#cancel-btn").click(onCancel);
+initKeyboardShortcuts();
+initClickEvents();
 $("#menu-entry").focus();
