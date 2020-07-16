@@ -1,4 +1,4 @@
-const root_url = "https://stage.usehover.com";
+const root_url = "https://www.usehover.com";
 // const root_url = "http://localhost:3000";
 let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
 
