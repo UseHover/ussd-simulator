@@ -1,0 +1,75 @@
+.switch {
+    position: relative;
+    display: inline-block;
+}
+
+.switch .toggle-box {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    z-index: -1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    outline: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.switch .toggle-img-div {
+    width: 100%;
+    height: 26px;
+    cursor: pointer;
+}
+
+.switch .toggle-img::before, .switch .toggle-img::after {
+    content: "";
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    transition: background-color 0.2s, transform 0.2s;
+} 
+
+.switch .toggle-img::before {
+    vertical-align: top;
+    border-radius: 7px;
+    top: 5px;
+    width: 36px;
+    height: 14px;
+    background-color: rgba(241, 241, 244, 0.3);
+}
+
+.switch .toggle-img::after {
+    top: 2px;
+    left: 0px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(213, 213, 213, 1);
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.switch .toggle-box:checked + .toggle-img-div .toggle-img::before {
+    background-color: rgba(255, 76, 0, 0.5);
+}
+
+.switch .toggle-box:checked + .toggle-img-div .toggle-img::after {
+    background-color: rgba(255, 76, 0, 1);
+    transform: translateX(16px);
+}
+
+.switch .toggle-box:disabled + .toggle-img {
+    color: rgb(0, 0, 0);
+    opacity: 0.38;
+    cursor: default;
+}
+
+.switch .toggle-box:disabled + .toggle-img-div .toggle-img::before {
+    background-color: rgba(0, 0, 0, 0.38);
+}
+
+.switch .toggle-box:checked:disabled + .toggle-img-div .toggle-img::before {
+    background-color: rgba(255, 76, 0, 0.6);
+}

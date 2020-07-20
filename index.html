@@ -1,467 +1,109 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-<style>
-	body {
-		font-family: "Roboto", sans-serif;
-	}
-	label,input {
-		font-size: 16px;
-		font-family: "Roboto", sans-serif;
-	}
-	section {
-		margin-bottom: 1em;
-	}
-	#outer-container { position: relative; }
-	#outer-container.android {
-		height: 800px;
-		width: 338px;
-	}
-	#outer-container.feature {
-		height: 700px;
-		width: 296px;
-	}
-	#outer-container.fullscreen {
-		width: 100%;
-		height: 100%;
-	}
-
-	#meta-controls { margin-top: 100px; width: 100%; }
-	#meta-controls button { 
-		position: absolute;
-		right: 8px; 
-		top: 8px;
-		background: transparent;
-		border-radius: 4px;
-	}
-
-	.accordion label {
-		cursor: pointer;
-	}
-
-	.accordion-content {
-		display: none;
-		opacity: 0;
-	}
-
-	input#accordion-toggle {
-		display: none;
-		position: relative;
-	}
-
-	#accordion-toggle:checked ~ .accordion-content {
-		display: block;
-		opacity: 1;
-	}
-
-	.form-input {
-		width: 100%;
-		margin-bottom: .5em;
-	}
-
-	.form-input > input {
-		float:right;
-	}
-
-	.form-input > input[type=button] {
-		float: none;
-	}
-
-	.fullscreen #meta-controls select, .fullscreen #fullscreen { display: none; }
-	#close { display: none; border: none; }
-	.fullscreen #close { 
-		display: block;
-		position: fixed; 
-		z-index: 10000;
-	}
-
-	#phone-type {
-		background: transparent;
-		min-width: 150px;
-		padding: 8px;
-		border-radius: 2px;
-		margin: 8px 8px 8px 16px;
-	}
-	option { padding: 8px; }
-
-	#simulator-container {
-		position: relative;
-		height: 100%;
-		width: 100%;
-		margin: 24px 0;
-		color: white;
-	}
-
-	.phone-img {
-		position: absolute;
-		max-height: 100%;
-	}
-	#android-img { width: 341px; }
-	.android #feature-img { display: none; }
-	.feature #android-img { display: none; }
-	.fullscreen .phone-img { display: none; }
-
-	#screen, .keyboard { position: absolute; }
-	.android #screen {
-		width: 287px;
-		height: 553px;
-		margin: 55px 27px;
-		background: #303030;
-		border-radius: 6px
-	}
-	.feature #screen {
-		width: 241px;
-		height: 320px;
-		margin: 67px 28px;
-	}
-	.feature .keyboard {
-		width: 276px;
-		height: 240px;
-		margin: 17px 10px;
-		bottom: 0;
-	}
-
-	.feature .keyboard .keys {
-		width: 100%;
-		height: 100%;
-	}
-
-	.feature .keyboard .keys .keycolumn {
-		display: inline-block;
-		width: 87px;
-	}
-
-	.feature .keyboard .keys .key {
-		width: 87px;
-		height: 37px;
-	}
-
-	.feature .keyboard .keys .key.press {
-		background-color: orange;
-		opacity: 0.2;
-	}
-	.fullscreen #screen {
-		position: fixed;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		background: #303030;
-	}
-
-	#ussd-box { position: relative; }
-	.android #ussd-box, .fullscreen #ussd-box {
-		width: 211px;
-		padding: 22px 23px 48px 23px;
-		margin: 45% auto;
-		border-radius: 4px;
-		background: #424242;
-		box-shadow: 0 22px 38px #00000042;
-		color: #FFFFFFB3;
-		font-family: "Roboto", sans-serif;
-	}
-	.feature #ussd-box {
-		top: 45%;
-		transform: translateY(-50%);
-		width: 191px;
-		padding: 10px 14px;
-		margin: 24px  11px 11px;
-		border-radius: 4px;
-		background: linear-gradient(#505050, #171717);
-		font-family: "Nokia Regular", sans-serif;
-	}
-
-	#menu-text { 
-		white-space: pre-line; 
-		line-height: 18px;
-		margin-bottom: 16px; 
-	}
-	input#menu-entry {
-		display: block;
-		max-width: 100%;
-		border: none; 
-		outline: none;
-		padding-bottom: 5px;
-		background: transparent;
-		color: white;
-		border-bottom: 1px solid #FFFFFF61;
-	}
-	.android #menu-entry, .fullscreen #menu-entry { caret-color: #FF4C00; }
-
-	#inline-error, #collections-error { color: red; margin: 8px 0; }
-	.android #inline-error, .fullscreen #inline-error { color: #FFFFFF61; }
-	
-	.android #buttons, .fullscreen #buttons { position: absolute; right: 0; }
-	.android .dialog-btn, .fullscreen .dialog-btn {
-		height: 36px;
-		padding: 11px 17px;
-		background: transparent;
-		text-transform: uppercase;
-		font-family: "Roboto", sans-serif;
-		border-radius: 2px;
-		border: none;
-		color: #FF4C00;
-	}
-	.feature .dialog-btn {
-		height: 30px;
-		background: linear-gradient(#505050, #171717);
-		font-family: "Nokia Regular", sans-serif;
-		box-shadow: 0 2px 2px #000000;
-		border-radius: 4px;
-		border: none;
-		color: white;
-	}
-</style>
-
-<div id="outer-container" class="android">
-	<div id="meta-controls">
-		<section class="accordion">
-			<label for="accordion-toggle">
-				<h4>Collections simulation &raquo;</h4>
-			</label>
-			<input type="checkbox" id="accordion-toggle"/>
-			<div class="accordion-content">
-				<div class="form-input">
-					<label for="merchant-id">Merchant ID</label>
-					<input name="merchant-id" id="merchant-id">
-				</div>
-				<div class="form-input">
-					<label for="amount">Amount</label>
-					<input name="amount" id="amount" type="number" min="0">
-				</div>
-				<div class="form-input">
-					<p id="collections-error"></p>
-				</div>
-				<div class="form-input">
-					<input id="collections-sim-btn" name="collections-sim-btn" type="button" value="Simulate"></input>
-				</div>
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>USSD Simulator</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+		<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+		<link rel="stylesheet" href="./style.css">
+		<link rel="stylesheet" href="./meta.css">
+		<link rel="stylesheet" href="./switch.css">
+		<link rel="stylesheet" href="./select.css">
+	</head>
+	<body>
+		<div id="outer-container" class="android">
+			<div id="page-header">
+				<h1>USSD Simulator</h1>
+				<h6></h6>
 			</div>
-		</section>
-		<section>
-			<select name="phone-type" id="phone-type">
-				<option value="android" selected="selected">Android</option>
-				<option value="feature">Feature Phone</option>
-				<!-- <option value="kaios">KaiOS</option> -->
-			</select>
-			<button id="fullscreen" class="fullscreen-btn"><img src="fullscreen.svg" id="fullscreen-img" /></button>
-			<button id="close" class="fullscreen-btn"><img src="close.svg" id="close-img" /></button>
-		</section>
-	</div>
-	<div id="simulator-container">
-		<img src="dumb_phone.png" id="feature-img" class="phone-img" />
-		<img src="pixel3xl.webp" id="android-img" class="phone-img" />
-		<div id="screen">
-			<div id="ussd-box">
-				<div id="menu-text">Dial Short Code</div>
-				<input id="menu-entry" name="menu-entry"></input>
-				<p id="inline-error"></p>
-				<div id="buttons">
-					<input class="dialog-btn" id="cancel-btn" name="cancel-btn" type="button" value="Cancel"></input>
-					<input class="dialog-btn" id="ok-btn" name="ok-btn" type="button" value="Send"></input>
+			<div id="meta-controls">
+				<div>
+					<h4>Registered user simulation</h4>
+					<label class="switch" for="registered-toggle">
+						<input id="registered-toggle" class="toggle-box" type="checkbox" checked/>
+						<div class="toggle-img-div"><div class="toggle-img round"></div></div>
+					</label>
+				</div>
+				<div class="toggle">
+					<h4>Collections simulation</h4>
+					<label class="switch" for="collections-toggle">
+						<input id="collections-toggle" class="toggle-box" type="checkbox"/>
+						<div class="toggle-img-div"><div class="toggle-img round"></div></div>
+						<div class="toggle-content">
+							<div class="labeled-input">
+								<label for="merchant-id" class="meta label">Merchant ID</label>
+								<input name="merchant-id" id="merchant-id" class="meta input">
+							</div>
+							<div class="labeled-input">
+								<label for="amount" class="meta label">Amount</label>
+								<input name="amount" id="amount" type="number" min="0" class="meta input">
+							</div>
+							<p id="collections-error"></p>
+							<input id="collections-sim-btn" name="collections-sim-btn" type="button" value="Simulate USSD push"  class="meta button"></input>
+						</div>
+					</label>
+				</div>
+				<div>
+					<div class="labeled-input select2Dropdown">
+						<label for="phone-type" class="meta label"><h4>Device</h4></label>
+						<select name="phone-type" id="phone-type" class="meta select" 
+							onclick="$('#phone-type-val').val($(this).find('option:selected').text());">
+							<option value="android" selected="selected">Android</option>
+							<option value="feature">Feature Phone</option>
+							<option value="fullscreen">Fullscreen</option>
+							<!-- <option value="kaios">KaiOS</option> -->
+						</select>
+					</div>
+				</div>
+				<button id="close-btn" class="fullscreen-btn"><img src="assets/close.svg" id="close-img" /></button>
+			</div>
+			<div id="simulator-container">
+				<img src="assets/dumb_phone.png" id="feature-img" class="phone-img" />
+				<img src="assets/pixel3xl.webp" id="android-img" class="phone-img" />
+				<div id="screen">
+					<div id="ussd-box">
+						<div id="menu-text">Dial Short Code</div>
+						<input id="menu-entry" name="menu-entry"></input>
+						<p id="inline-error"></p>
+						<div id="buttons">
+							<input class="dialog-btn" id="cancel-btn" name="cancel-btn" type="button" value="Cancel"></input>
+							<input class="dialog-btn" id="ok-btn" name="ok-btn" type="button" value="Send"></input>
+						</div>
+					</div>
+				</div>
+				<div class="keyboard">
+					<div class="keys">
+						<div class="keycolumn">
+							<div class="key"></div>
+							<div class="key" function="ok"></div>
+							<div class="key" key="1"></div>
+							<div class="key" key="4"></div>
+							<div class="key" key="7"></div>
+							<div class="key" key="*"></div>
+						</div>
+						<div class="keycolumn">
+							<div class="key"></div>
+							<div class="key"></div>
+							<div class="key" key="2"></div>
+							<div class="key" key="5"></div>
+							<div class="key" key="8"></div>
+							<div class="key" key="0"></div>
+						</div>
+						<div class="keycolumn">
+							<div class="key" function="backspace"></div>
+							<div class="key" function="cancel"></div>
+							<div class="key" key="3"></div>
+							<div class="key" key="6"></div>
+							<div class="key" key="9"></div>
+							<div class="key" key="#"></div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="keyboard">
-			<div class="keys">
-				<div class="keycolumn">
-					<div class="key"></div>
-					<div class="key" function="ok"></div>
-					<div class="key" key="1"></div>
-					<div class="key" key="4"></div>
-					<div class="key" key="7"></div>
-					<div class="key" key="*"></div>
-				</div>
-				<div class="keycolumn">
-					<div class="key"></div>
-					<div class="key"></div>
-					<div class="key" key="2"></div>
-					<div class="key" key="5"></div>
-					<div class="key" key="8"></div>
-					<div class="key" key="0"></div>
-				</div>
-				<div class="keycolumn">
-					<div class="key" function="backspace"></div>
-					<div class="key" function="cancel"></div>
-					<div class="key" key="3"></div>
-					<div class="key" key="6"></div>
-					<div class="key" key="9"></div>
-					<div class="key" key="#"></div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<script>
-	const root_url = "https://stage.usehover.com";
-	let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
-
-	function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
-	function loadChannel() { load(root_url + "/api/channels/", onLoadChannel); }
-	function loadMenu(id) {
-		load(root_url + "/api/menus/" + id, onLoadMenu);  
-		loadChildren(id);
-	}
-	function loadChildren(menu_id) { load(root_url + "/api/menus?parent_id=" + menu_id, onLoadChildren); }
-
-	function onLoadChannel(result) { channels = result.data.map(function(d) { return d.attributes; }); }
-
-	function onLoadMenu(result) {
-		menu = result.data.attributes;
-		$("#menu-text").text(getText(menu));
-		$("#menu-entry").val("");
-		if (menu.response_type == "info") {
-			$("#menu-entry").hide();
-			$("#cancel-btn").hide();
-			$("#ok-btn").click(onCancel);
-		}
-	}
-
-	function onLoadChildren(result) {
-		child_menus = result.data.map(function(d) { return d.attributes; });
-	}
-
-	function onError(msg) { 
-		$("#inline-error").text(msg);
-		$("#menu-entry").val("");
-		$("#menu-entry").focus();
-	}
-	function onCancel() { 
-		place = 0;
-		$("#menu-text").text("Dial Short Code");
-		$("#menu-entry").show();
-		$("#cancel-btn").show();
-		onError("");
-	}
-
-	function getText(menu) {
-		let display_text = menu.text;
-		for (const property in vars) {
-			display_text = display_text.replace("(?<" + property + ">)", vars[property]);
-		}
-		return display_text;
-	}
-
-	function onOk() {
-		$("#inline-error").text("");
-		if (place === 0) { loadRootMenu();
-		} else { submitResponse(); }
-		$("#menu-entry").focus();
-	}
-
-	function loadRootMenu() {
-		if (channelExists()) {
-			place = 1;
-			loadMenu(channelExists().first_menu_id);
-		} else {
-			onError("Short code does not exist");
-		}
-	}
-
-	function submitResponse() {
-		if ((menu.response_type === "choice" || menu.response_type === "info") && submenuExists()) {
-			loadMenu(submenuExists().id);
-		} else if ($("#menu-entry").val().trim() === "0" && menu.response_type === "choice" && !submenuExists() && menu.parent_menu_id !== null) {
-			loadMenu(menu.parent_menu_id);
-		} else if (menu.response_type === "variable") {
-			submitVar(menu.response_var, $("#menu-entry").val().trim());
-		} else { onError("Invalid option"); }
-	}
-
-	function channelExists() { return channels.find(el => el.root_code === $("#menu-entry").val().trim()); }
-	function submenuExists() { return child_menus.find(function(el) { return el.parent_index.toString() === $("#menu-entry").val().trim(); }); }
-
-	function submitVar(key, entry) {
-		if (!menu.valid_response_regex || entry.match(menu.valid_response_regex)) {
-			vars[key] = entry;
-			if (child_menus.length > 0) {
-				loadMenu(child_menus[0].id);
-			} else {
-				$("#menu-text").text("Request submitted, please wait for response.");
-				$("#menu-entry").hide();
-				$("#cancel-btn").hide();
-				$("#ok-btn").click(onCancel);
-			}
-		} else { onError("Invalid entry"); }
-	}
-
-	function setStyle(e) {
-		$("#outer-container").removeClass(mode).addClass(e.target.value);
-		mode = e.target.value;
-		$("#menu-entry").focus();
-	}
-
-	function toggleFullscreen(e) {
-		$("#outer-container").removeClass(mode);
-		$("#phone-type").val("android");
-		mode = mode === "fullscreen" ? "android" : "fullscreen";
-		$("#outer-container").addClass(mode);
-		$("#ussd-box").css('margin-top', mode === "fullscreen" ? $("#screen").height()*.45 : "");
-		$("#menu-entry").focus();
-	}
-
-	function keyboardInteraction(e) {
-		e.currentTarget.classList.add("press");
-		if (e.currentTarget.attributes.key)  {
-			newInput = $("#menu-entry").val() + e.currentTarget.attributes.key.value;
-			$("#menu-entry").val(newInput);
-		}
-
-		if (e.currentTarget.attributes.function){
-			functionButton = e.currentTarget.attributes.function.value;
-			switch (functionButton) {
-				case "ok":
-					$("#ok-btn").click();
-					break;
-				case "cancel":
-					$("#cancel-btn").click();
-					break;
-				case "backspace":
-					$("#menu-entry").val($("#menu-entry").val().slice(0,-1));
-					break;
-				default:
-					console.log("Button function not defined:", functionButton);
-			}
-		}
-	 }
-
-	 function collectionsSimulator(){
-		$("#collections-error").text("");
-		$("#menu-entry").val("");
-		merchantId = $("#merchant-id").val();
-		amount = $("#amount").val();
-
-		if (merchantId == "" && amount == ""){
-			$("#collections-error").text("Fill out the merchant ID and amount before running the simulation");
-			return
-		}
-		msg = "".concat("Merchant ",merchantId, " has initiated a debit of UGX ", amount, " from your MM account. Enter PIN")
-
-		$("#menu-text").text(msg);
-		$("#ok-btn").click(showCollectionsApproval);
-	 }
-
-	 function showCollectionsApproval() {
-		merchantId = $("#merchant-id").val();
-		amount = $("#amount").val();
-
-		msg = "".concat("You have approved debit of UGX ", amount, " initiated by ", merchantId, ". Transaction ID ", Date.now());
-		$("#menu-text").text(msg);
-		$("#inline-error").text("");
-		$("#menu-entry").hide();
-		$("#cancel-btn").hide();
-		$("#ok-btn").click(onCancel);
-	 }
-
-	loadChannel();
-	$("#phone-type").change(setStyle);
-	$(".fullscreen-btn").click(toggleFullscreen);
-	$("#ok-btn").click(onOk);
-	$("#menu-entry").keypress(function (e) { if (e.which == 13) { onOk(); } });
-	$(".key").mousedown(keyboardInteraction);
-	 $(".key").mouseup(function(e) {
-		e.currentTarget.classList.remove("press");
-	 });
-	$("#cancel-btn").click(onCancel);
-	$("#menu-entry").focus();
-	$("#collections-sim-btn").click(collectionsSimulator);
-</script>
+	</body>
+	<footer>
+		<script src="./script.js"></script>
+	</footer>
+</html>
