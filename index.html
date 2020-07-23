@@ -13,58 +13,6 @@
 	</head>
 	<body>
 		<div id="outer-container" class="android">
-			<div id="page-header">
-				<h1>USSD Simulator</h1>
-				<h6></h6>
-			</div>
-			<div id="meta-controls">
-				<div>
-					<h4>Registered user simulation</h4>
-					<label class="switch" for="registered-toggle">
-						<input id="registered-toggle" class="toggle-box" type="checkbox" checked/>
-						<div class="toggle-img-div">
-							<div class="toggle-img round"></div>
-							<p class="info">* This toggles whether the University fee payment flow recognises the student as registered or not.</p>
-						</div>
-					</label>
-					
-				</div>
-				<div class="toggle">
-					<h4>Collections simulation</h4>
-					<label class="switch" for="collections-toggle">
-						<input id="collections-toggle" class="toggle-box" type="checkbox"/>
-						<div class="toggle-img-div">
-							<div class="toggle-img round"></div>
-							<p class="info">* This toggle will enable you to run the USSD push merchant flow simulation.</p>
-						</div>
-						<div class="toggle-content">
-							<div class="labeled-input">
-								<label for="merchant-id" class="meta label">Merchant ID</label>
-								<input name="merchant-id" id="merchant-id" class="meta input">
-							</div>
-							<div class="labeled-input">
-								<label for="amount" class="meta label">Amount</label>
-								<input name="amount" id="amount" type="number" min="0" class="meta input">
-							</div>
-							<p id="collections-error"></p>
-							<input id="collections-sim-btn" name="collections-sim-btn" type="button" value="Simulate USSD push"  class="meta button"></input>
-						</div>
-					</label>
-				</div>
-				<div>
-					<div class="labeled-input select2Dropdown">
-						<label for="phone-type" class="meta label"><h4>Device</h4></label>
-						<select name="phone-type" id="phone-type" class="meta select" 
-							onclick="$('#phone-type-val').val($(this).find('option:selected').text());">
-							<option value="android" selected="selected">Android</option>
-							<option value="feature">Feature Phone</option>
-							<option value="fullscreen">Fullscreen</option>
-							<!-- <option value="kaios">KaiOS</option> -->
-						</select>
-					</div>
-				</div>
-				<button id="close-btn" class="fullscreen-btn"><img src="assets/close.svg" id="close-img" /></button>
-			</div>
 			<div id="simulator-container">
 				<img src="assets/dumb_phone.png" id="feature-img" class="phone-img" />
 				<img src="assets/pixel3xl.webp" id="android-img" class="phone-img" />
@@ -108,6 +56,60 @@
 					</div>
 				</div>
 			</div>
+			<div>
+				<div id="page-header">
+					<h1>USSD Simulator</h1>
+					<h6></h6>
+				</div>
+				<div id="meta-controls">
+					<div>
+						<div class="labeled-input select2Dropdown">
+							<label for="phone-type" class="meta label"><h4>Device</h4></label>
+							<select name="phone-type" id="phone-type" class="meta select" 
+								onclick="$('#phone-type-val').val($(this).find('option:selected').text());">
+								<option value="android" selected="selected">Android</option>
+								<option value="feature">Feature Phone</option>
+								<option value="fullscreen">Fullscreen</option>
+								<!-- <option value="kaios">KaiOS</option> -->
+							</select>
+						</div>
+					</div>
+					<div>
+						<h4>Registered user simulation</h4>
+						<label class="switch" for="registered-toggle">
+							<input id="registered-toggle" class="toggle-box" type="checkbox" checked/>
+							<div class="toggle-img-div">
+								<div class="toggle-img round"></div>
+								<p class="info">* This toggles whether the University fee payment flow recognises the student as registered or not.</p>
+							</div>
+						</label>
+					</div>
+					<div class="toggle">
+						<h4>Collections simulation</h4>
+						<label class="switch" for="collections-toggle">
+							<input id="collections-toggle" class="toggle-box" type="checkbox"/>
+							<div class="toggle-img-div">
+								<div class="toggle-img round"></div>
+								<p class="info">* This toggle will enable you to run the USSD push merchant flow simulation.</p>
+							</div>
+							<div class="toggle-content">
+								<div class="labeled-input">
+									<label for="merchant-id" class="meta label">Merchant ID</label>
+									<input name="merchant-id" id="merchant-id" class="meta input">
+								</div>
+								<div class="labeled-input">
+									<label for="amount" class="meta label">Amount</label>
+									<input name="amount" id="amount" type="number" min="0" class="meta input">
+								</div>
+								<p id="collections-error"></p>
+								<input id="collections-sim-btn" name="collections-sim-btn" type="button" value="Simulate USSD push"  class="meta button"></input>
+							</div>
+						</label>
+					</div>
+				</div>
+				<button id="close-btn" class="fullscreen-btn"><img src="assets/close.svg" id="close-img" /></button>
+			</div>
+			
 		</div>
 	</body>
 	<footer>

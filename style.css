@@ -1,11 +1,8 @@
 #outer-container { position: relative; margin: 0 55px; }
-#outer-container.android {
+#outer-container.android, #outer-container.feature { 
 	height: 800px;
-	width: 338px;
-}
-#outer-container.feature {
-	height: 700px;
-	width: 296px;
+	display: grid;
+  	grid-template-columns: 400px 400px;
 }
 #outer-container.fullscreen {
 	width: 100%;

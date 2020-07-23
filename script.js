@@ -110,6 +110,12 @@ function setStyle(newStyle) {
 	$("#outer-container").removeClass(mode).addClass(newStyle);
 	mode = newStyle;
 	$("#ussd-box").css('margin-top', mode === "fullscreen" ? $("#screen").height()*.45 : "");
+	if (mode === "fullscreen") {
+		$("#meta-controls").hide();
+	} else {
+		$("#meta-controls").show();
+	}
+	
 	$("#menu-entry").focus();
 }
 
