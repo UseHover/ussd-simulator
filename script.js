@@ -41,7 +41,7 @@ function onCancel() {
 }
 
 function getText(menu) {
-	let display_text = menu.text;
+	let display_text = menu.sample;
 	for (const property in vars) {
 		display_text = display_text.replace("(?<" + property + ">)", vars[property]);
 	}
