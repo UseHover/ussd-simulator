@@ -142,6 +142,9 @@ p.info {
 	font-size: 12px;
     margin-top: 0px;
     margin-bottom: 21px;
-    float: right;
     width: 250px;
+}
+
+.pull-right {
+	float: right;
 }
