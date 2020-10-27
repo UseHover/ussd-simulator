@@ -2,7 +2,7 @@ const root_url = "https://www.usehover.com";
 const dynamic_journey_api = "https://hover-public.s3.amazonaws.com/shoe-menu.xml";
 // const root_url = "http://localhost:3000";
 let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
-let dynamic_journey = {}, dynamic_journey_menus = [], dynamic_journey_arguments = [], dynamic_journey_menu = null, dynamic_journey_place = 0;
+let run_dynamic_journey = false, dynamic_journey = {}, dynamic_journey_menus = [], dynamic_journey_arguments = [], dynamic_journey_menu = null, dynamic_journey_place = 0;
 
 function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
 function loadChannel() { load(root_url + "/api/channels/", onLoadChannel); }
@@ -34,8 +34,12 @@ function onError(msg) {
 	$("#menu-entry").val("");
 	$("#menu-entry").focus();
 }
-function onCancel() { 
+function onCancel() {
 	place = 0;
+	if (run_dynamic_journey) {
+		run_dynamic_journey = false;
+		dynamic_journey_place = 0;
+	}
 	$("#menu-text").text("Dial Short Code");
 	$("#menu-entry").show();
 	$("#cancel-btn").show();
@@ -52,8 +56,13 @@ function getText(menu) {
 
 function onOk() {
 	$("#inline-error").text("");
-	if (place === 0) { loadRootMenu();
-	} else { submitResponse(); }
+	if (run_dynamic_journey) {
+		dynamicJourneySimulator();
+	} else if (place === 0) {
+		loadRootMenu();
+	} else {
+		submitResponse();
+	}
 	$("#menu-entry").focus();
 }
 
@@ -262,7 +271,6 @@ function buildDynamicJourneyMenu(instructions) {
 
 			for (j in submenu_instructions['optionslist']['option']) {
 				submenu_option = submenu_instructions['optionslist']['option'][j];
-				console.log(j, submenu_option);
 				submenu['text'] = `${submenu['text']}${j}. ${ submenu_option['display']['texts']['text']['attr']['@_text']}\n`;
 				
 				submenu['options'][j] = {};
@@ -285,14 +293,12 @@ function buildDynamicJourneyMenu(instructions) {
 		}
 		dynamic_journey_menus.push(menu);
 	}
-	console.log(dynamic_journey_menus);	
 }
 
 function initiateDynamicJourneySimulator() {
 	$("#inline-error").text("");
 	$("#menu-entry").val("");
-	$("#ok-btn").off("click");
-	$("#ok-btn").click(dynamicJourneySimulator);
+	run_dynamic_journey = true;
 
 	dynamic_journey_menu = dynamic_journey_menus[dynamic_journey_place];
 
@@ -306,9 +312,6 @@ function dynamicJourneySimulator() {
 	choice = $("#menu-entry").val();
 
 	if (choice === 'end') {
-		dynamic_journey_place = 0;
-		$("#ok-btn").off("click");
-		$("#ok-btn").click(onOk);
 		$("#cancel-btn").click();
 		return;
 	}
