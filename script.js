@@ -2,7 +2,8 @@ const root_url = "https://www.usehover.com";
 const dynamic_journey_api = "https://hover-public.s3.amazonaws.com/shoe-menu.xml";
 // const root_url = "http://localhost:3000";
 let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
-let run_dynamic_journey = false, dynamic_journey = {}, dynamic_journey_menus = [], dynamic_journey_arguments = [], dynamic_journey_menu = null, dynamic_journey_place = 0;
+let run_dynamic_journey = false, dynamic_journey = {}, dynamic_journey_menus = [], dynamic_journey_arguments = {}, dynamic_journey_menu = null, dynamic_journey_place = 0;
+let arg_regex = /\$(?<argument>\w+)/g;
 
 function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
 function loadChannel() { load(root_url + "/api/channels/", onLoadChannel); }
@@ -295,6 +296,16 @@ function buildDynamicJourneyMenu(instructions) {
 	}
 }
 
+function insertDynamicJourneyArguments(text) {
+	while (match = arg_regex.exec(text)) {
+		argument_key = match.groups.argument.toLocaleLowerCase();
+		if (argument_key in dynamic_journey_arguments) {
+			text = text.replace(match[0], dynamic_journey_arguments[argument_key]);
+		}
+	}
+	return text;
+}
+
 function initiateDynamicJourneySimulator() {
 	$("#inline-error").text("");
 	$("#menu-entry").val("");
@@ -318,8 +329,11 @@ function dynamicJourneySimulator() {
 
 	if (choice in dynamic_journey_menu['options']) {
 		dynamic_journey_menu = dynamic_journey_menu['options'][choice];
-		dynamic_journey_arguments.push(dynamic_journey_menu['arguments']);
-
+		if ('arguments' in dynamic_journey_menu) {
+			argument_key = dynamic_journey_menu['arguments']['@_key'].toLocaleLowerCase();
+			dynamic_journey_arguments[argument_key] = dynamic_journey_menu['arguments']['@_value'];
+		}
+		
 		if (!('text' in dynamic_journey_menu)) {
 			dynamic_journey_place++;
 			dynamic_journey_menu = dynamic_journey_menus[dynamic_journey_place];
@@ -330,7 +344,7 @@ function dynamicJourneySimulator() {
 
 	
 
-	$("#menu-text").text(dynamic_journey_menu['text']);
+	$("#menu-text").text(insertDynamicJourneyArguments(dynamic_journey_menu['text']));
 	$("#menu-entry").val("");
 	if ('end' in dynamic_journey_menu) {
 		$("#menu-entry").hide();
