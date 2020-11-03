@@ -1,6 +1,9 @@
 const root_url = "https://www.usehover.com";
+const dynamic_journey_api = "https://hover-public.s3.amazonaws.com/shoe-menu.xml";
 // const root_url = "http://localhost:3000";
 let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
+let run_dynamic_journey = false, dynamic_journey = {}, dynamic_journey_menus = [], dynamic_journey_arguments = {}, dynamic_journey_menu = null, dynamic_journey_place = 0;
+let arg_regex = /\$(?<argument>\w+)/g;
 
 function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
 function loadChannel() { load(root_url + "/api/channels/", onLoadChannel); }
@@ -32,8 +35,12 @@ function onError(msg) {
 	$("#menu-entry").val("");
 	$("#menu-entry").focus();
 }
-function onCancel() { 
+function onCancel() {
 	place = 0;
+	if (run_dynamic_journey) {
+		run_dynamic_journey = false;
+		dynamic_journey_place = 0;
+	}
 	$("#menu-text").text("Dial Short Code");
 	$("#menu-entry").show();
 	$("#cancel-btn").show();
@@ -50,8 +57,13 @@ function getText(menu) {
 
 function onOk() {
 	$("#inline-error").text("");
-	if (place === 0) { loadRootMenu();
-	} else { submitResponse(); }
+	if (run_dynamic_journey) {
+		dynamicJourneySimulator();
+	} else if (place === 0) {
+		loadRootMenu();
+	} else {
+		submitResponse();
+	}
 	$("#menu-entry").focus();
 }
 
@@ -189,7 +201,8 @@ function initKeyboardShortcuts() {
 
 function initClickEvents() {
 	$("#collections-sim-btn").click(collectionsSimulator);
-
+	$("#dynamic-journey-sim-btn").click(initiateDynamicJourneySimulator);
+	
 	$(".fullscreen-btn").click(toggleFullscreen);
 	$("#phone-type").select2({minimumResultsForSearch: Infinity});
 	$("#phone-type").change(onStyleChange);
@@ -202,7 +215,146 @@ function initClickEvents() {
 	 });
 }
 
+function loadDynamicJourney() {
+	xhr = new XMLHttpRequest();
+	xhr.responseType = 'text';
+	xhr.overrideMimeType('text/xml');
+	xhr.open("GET", dynamic_journey_api);
+	xhr.onload = function () {
+	  if (xhr.readyState === xhr.DONE && xhr.status === 200) {
+	    parseXML(xhr.responseText);
+	  }
+	};
+
+	xhr.send();
+}
+
+function parseXML(xml) {
+	options = {
+		attributeNamePrefix : "@_",
+		attrNodeName: "attr", //default is 'false'
+		textNodeName : "#text",
+		ignoreAttributes : false,
+		ignoreNameSpace : false,
+		allowBooleanAttributes : false,
+		parseNodeValue : true,
+		parseAttributeValue : true,
+		trimValues: true,
+		cdataTagName: "__cdata", //default is 'false'
+		cdataPositionChar: "\\c",
+		parseTrueNumberOnly: false,
+		arrayMode: false, //"strict"
+		attrValueProcessor: (val, attrName) => he.decode(val, {isAttributeValue: true}),//default is a=>a
+		tagValueProcessor : (val, tagName) => he.decode(val), //default is a=>a
+		stopNodes: ["parse-me-as-string"]
+	};
+	dynamic_journey = parser.parse(xml,options);
+	instructions = dynamic_journey["ns0:createjourneyrequest"]["journeydefinition"]["instructions"]
+	buildDynamicJourneyMenu(instructions);
+}
+
+function buildDynamicJourneyMenu(instructions) {
+	if ('options' in instructions) {
+		let menu = {'text': '', 'options': []};
+		options = instructions['options']
+		menu['text'] = `${options["header"]["texts"]["text"]["attr"]["@_text"]}\n\n`;
+		
+		optionslist = options['optionslist'];
+
+		for (i in optionslist['option']) {
+			option = optionslist['option'][i];
+			menu['text'] = `${menu['text']}${i}. ${option["display"]["texts"]["text"]["attr"]["@_text"]}\n`;
+			submenu = {'text': '', 'options': []}
+			submenu_instructions = option["instructions"][1]["options"];
+			submenu_arguments = option["instructions"][0]["argument"]["attr"];
+			submenu['arguments'] = submenu_arguments;
+			submenu['text'] = `${submenu_instructions["header"]["texts"]["text"]["attr"]["@_text"]}\n\n`;
+
+			for (j in submenu_instructions['optionslist']['option']) {
+				submenu_option = submenu_instructions['optionslist']['option'][j];
+				submenu['text'] = `${submenu['text']}${j}. ${ submenu_option['display']['texts']['text']['attr']['@_text']}\n`;
+				
+				submenu['options'][j] = {};
+				submenu['options'][j]['arguments'] = submenu_option['instructions']['argument']['attr'];
+			}
+
+			menu['options'][i] = submenu;
+		}
+		dynamic_journey_menus.push(menu);
+	}
+
+	if ('instructions' in instructions) {
+		let menu = {'text': '', 'options': []};
+		option = instructions["instructions"]["options"];
+		menu['text'] = `${option['header']['text']['attr']['@_text']}\n\n`;
+		for (i in option['option']) {
+			submenu_option = option['option'][i];
+			menu['text'] = `${menu['text']}${i}. ${submenu_option['display']['text']['attr']['@_text']}\n`;
+			menu['options'][i] = { 'text': submenu_option['instructions']['response']['texts']['text']['attr']['@_text'], 'end': true };
+		}
+		dynamic_journey_menus.push(menu);
+	}
+}
+
+function insertDynamicJourneyArguments(text) {
+	while (match = arg_regex.exec(text)) {
+		argument_key = match.groups.argument.toLocaleLowerCase();
+		if (argument_key in dynamic_journey_arguments) {
+			text = text.replace(match[0], dynamic_journey_arguments[argument_key]);
+		}
+	}
+	return text;
+}
+
+function initiateDynamicJourneySimulator() {
+	$("#inline-error").text("");
+	$("#menu-entry").val("");
+	run_dynamic_journey = true;
+
+	dynamic_journey_menu = dynamic_journey_menus[dynamic_journey_place];
+
+	$("#menu-text").text(dynamic_journey_menu['text']);
+	$("#menu-entry").focus();
+}
+
+function dynamicJourneySimulator() {
+	$("#inline-error").text("");
+
+	choice = $("#menu-entry").val();
+
+	if (choice === 'end') {
+		$("#cancel-btn").click();
+		return;
+	}
+
+	if (choice in dynamic_journey_menu['options']) {
+		dynamic_journey_menu = dynamic_journey_menu['options'][choice];
+		if ('arguments' in dynamic_journey_menu) {
+			argument_key = dynamic_journey_menu['arguments']['@_key'].toLocaleLowerCase();
+			dynamic_journey_arguments[argument_key] = dynamic_journey_menu['arguments']['@_value'];
+		}
+		
+		if (!('text' in dynamic_journey_menu)) {
+			dynamic_journey_place++;
+			dynamic_journey_menu = dynamic_journey_menus[dynamic_journey_place];
+		}
+	} else {
+		$("#inline-error").text("Invalid option");
+	}
+
+	
+
+	$("#menu-text").text(insertDynamicJourneyArguments(dynamic_journey_menu['text']));
+	$("#menu-entry").val("");
+	if ('end' in dynamic_journey_menu) {
+		$("#menu-entry").hide();
+		$("#menu-entry").val("end");
+	}
+	$("#menu-entry").focus();
+}
+
 loadChannel();
 initKeyboardShortcuts();
 initClickEvents();
 $("#menu-entry").focus();
+loadDynamicJourney();
