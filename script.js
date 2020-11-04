@@ -263,7 +263,8 @@ function buildDynamicJourneyMenu(instructions) {
 
 		for (i in optionslist['option']) {
 			option = optionslist['option'][i];
-			menu['text'] = `${menu['text']}${i}. ${option["display"]["texts"]["text"]["attr"]["@_text"]}\n`;
+			display_index = parseInt(i) + 1;
+			menu['text'] = `${menu['text']}${display_index}. ${option["display"]["texts"]["text"]["attr"]["@_text"]}\n`;
 			submenu = {'text': '', 'options': []}
 			submenu_instructions = option["instructions"][1]["options"];
 			submenu_arguments = option["instructions"][0]["argument"]["attr"];
@@ -272,7 +273,8 @@ function buildDynamicJourneyMenu(instructions) {
 
 			for (j in submenu_instructions['optionslist']['option']) {
 				submenu_option = submenu_instructions['optionslist']['option'][j];
-				submenu['text'] = `${submenu['text']}${j}. ${ submenu_option['display']['texts']['text']['attr']['@_text']}\n`;
+				display_index = parseInt(j) + 1;
+				submenu['text'] = `${submenu['text']}${display_index}. ${ submenu_option['display']['texts']['text']['attr']['@_text']}\n`;
 				
 				submenu['options'][j] = {};
 				submenu['options'][j]['arguments'] = submenu_option['instructions']['argument']['attr'];
@@ -289,7 +291,8 @@ function buildDynamicJourneyMenu(instructions) {
 		menu['text'] = `${option['header']['text']['attr']['@_text']}\n\n`;
 		for (i in option['option']) {
 			submenu_option = option['option'][i];
-			menu['text'] = `${menu['text']}${i}. ${submenu_option['display']['text']['attr']['@_text']}\n`;
+			display_index = parseInt(i) +1;
+			menu['text'] = `${menu['text']}${display_index}. ${submenu_option['display']['text']['attr']['@_text']}\n`;
 			menu['options'][i] = { 'text': submenu_option['instructions']['response']['texts']['text']['attr']['@_text'], 'end': true };
 		}
 		dynamic_journey_menus.push(menu);
@@ -327,8 +330,10 @@ function dynamicJourneySimulator() {
 		return;
 	}
 
-	if (choice in dynamic_journey_menu['options']) {
-		dynamic_journey_menu = dynamic_journey_menu['options'][choice];
+	index = choice - 1;
+
+	if (index in dynamic_journey_menu['options']) {
+		dynamic_journey_menu = dynamic_journey_menu['options'][index];
 		if ('arguments' in dynamic_journey_menu) {
 			argument_key = dynamic_journey_menu['arguments']['@_key'].toLocaleLowerCase();
 			dynamic_journey_arguments[argument_key] = dynamic_journey_menu['arguments']['@_value'];
