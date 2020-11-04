@@ -2,7 +2,7 @@ const root_url = "https://www.usehover.com";
 const dynamic_journey_api = "https://hover-public.s3.amazonaws.com/shoe-menu.xml";
 // const root_url = "http://localhost:3000";
 let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
-let run_dynamic_journey = false, dynamic_journey = {}, dynamic_journey_menus = [], dynamic_journey_arguments = {}, dynamic_journey_menu = null, dynamic_journey_place = 0;
+let run_dynamic_journey = false, dynamic_journey = null, dynamic_journey_menus = [], dynamic_journey_arguments = {}, dynamic_journey_menu = null, dynamic_journey_place = 0;
 let arg_regex = /\$(?<argument>\w+)/g;
 
 function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
@@ -206,6 +206,7 @@ function initClickEvents() {
 	$(".fullscreen-btn").click(toggleFullscreen);
 	$("#phone-type").select2({minimumResultsForSearch: Infinity});
 	$("#phone-type").change(onStyleChange);
+	$("#dynamic-journey-file").change(loadDynamicJourney);
 	
 	$("#ok-btn").click(onOk);
 	$("#cancel-btn").click(onCancel);
@@ -215,18 +216,17 @@ function initClickEvents() {
 	 });
 }
 
-function loadDynamicJourney() {
-	xhr = new XMLHttpRequest();
-	xhr.responseType = 'text';
-	xhr.overrideMimeType('text/xml');
-	xhr.open("GET", dynamic_journey_api);
-	xhr.onload = function () {
-	  if (xhr.readyState === xhr.DONE && xhr.status === 200) {
-	    parseXML(xhr.responseText);
-	  }
+function loadDynamicJourney(e) {
+	var file = e.target.files[0];
+	if (!file) {
+		return;
+	}
+	var reader = new FileReader();
+	reader.onload = function(e) {
+		var contents = e.target.result;
+		parseXML(contents);
 	};
-
-	xhr.send();
+	reader.readAsText(file);
 }
 
 function parseXML(xml) {
@@ -249,6 +249,10 @@ function parseXML(xml) {
 		stopNodes: ["parse-me-as-string"]
 	};
 	dynamic_journey = parser.parse(xml,options);
+	if (dynamic_journey["ns0:createjourneyrequest"] === undefined) {
+		$("#inline-error").text("The dynamic journey file selected does not contain the expected xml schema.");
+		return;
+	}
 	instructions = dynamic_journey["ns0:createjourneyrequest"]["journeydefinition"]["instructions"]
 	buildDynamicJourneyMenu(instructions);
 }
@@ -310,6 +314,10 @@ function insertDynamicJourneyArguments(text) {
 }
 
 function initiateDynamicJourneySimulator() {
+	if (dynamic_journey === null) {
+		$("#inline-error").text("You need to upload a dynamic journey .xml file before you can run this simulation.");
+		return;
+	}
 	$("#inline-error").text("");
 	$("#menu-entry").val("");
 	run_dynamic_journey = true;
