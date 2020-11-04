@@ -22,6 +22,8 @@ label, input, select {
 	color: rgba(241, 241, 244, 1);
 }
 
+#dynamic-journey-file { margin-bottom: 6px; }
+
 #page-header { margin-top: 55px; }
 
 #meta-controls { margin: 55px 0; width: 100%; }
