@@ -120,7 +120,18 @@
 				</div>
 				<button id="close-btn" class="fullscreen-btn"><img src="assets/close.svg" id="close-img" /></button>
 			</div>
-			
+			<div class="instructions-container">
+				<p>Hey there!</p>
+				<p>Welcome to the MTN MoMo USSD Journey simulator. This tool allows developers to simulate various USSD shortcode journeys and is modelled on MTN Uganda's actual MoMo flow.</p>
+				<p>Last updated: December 2020.</p>
+				<p>Currently, the simulator supports 4 different flows.</p>
+				<ol>
+					<li><b>Standard MTN MoMo Uganda Flow</b> - this is a simulation of the current MTN MoMo Uganda interface, available by dialling *165# in the simulator interface.</li>
+					<li><b>University Payment C2B Flow</b> - this is a simulation of a university payment C2B flow that is available by dialling *165# → 4 → 3 → 1 → Enter any university ID → 1 → Enter student ID → Enter amount → Confirm. The <b>Registered user simulation</b> toggle will control whether or not the simulator recognises the university ID as a registered student or not.</li>
+					<li><b>Merchant Initiated C2B Checkout Flow</b> - this is a simulation of a merchant-initiated C2B checkout request to the user. The <b>Collections simulation toggle</b> will display input fields for you to enter the merchant ID and amount, and the <b>Simulate USSD push button</b> will invoke the checkout request on the simulator.</li>
+					<li><b>Channel-as-a-Service Dynamic Journey Flow</b> - this is a simulation of the CaaS dynamic journey flow. To use this, please select a an XML file that complies with the dynamic journey schema and then click the <b>Simulate Dynamic Journey</b> button to run the simulation based on the content of the file. The simulation will only work if the file complies with the dynamic journey schema as defined here.</li>
+				</ol>
+			</div>
 		</div>
 	</body>
 	<footer>

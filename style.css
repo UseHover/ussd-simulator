@@ -2,7 +2,7 @@
 #outer-container.android, #outer-container.feature { 
 	height: 800px;
 	display: grid;
-  	grid-template-columns: 400px 400px;
+  	grid-template-columns: 400px 400px 500px;
 }
 #outer-container.fullscreen {
 	width: 100%;
@@ -16,6 +16,16 @@
 	margin: 24px 0;
 	color: white;
 	font-family: "Roboto", sans-serif;
+}
+
+.instructions-container {
+	margin: 0 0 0 36px;
+	font-weight: 400;
+	line-height: 1.3;
+}
+
+.instructions-container b {
+	font-weight: 600;
 }
 
 .phone-img {
