@@ -1,9 +1,11 @@
-const root_url = "https://www.usehover.com";
-const dynamic_journey_api = "https://hover-public.s3.amazonaws.com/shoe-menu.xml";
-// const root_url = "http://localhost:3000";
+//const root_url = "https://www.usehover.com";
+const root_url = "http://localhost:3000";
+const djs = new DJS();
+
 let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
-let run_dynamic_journey = false, dynamic_journey = null, dynamic_journey_menus = [], dynamic_journey_arguments = {}, dynamic_journey_menu = null, dynamic_journey_place = 0;
+let dynamic_journey_menus = [], dynamic_journey_arguments = {}, dynamic_journey_menu = null, dynamic_journey_place = 0;
 let arg_regex = /\$(?<argument>\w+)/g;
+
 
 function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
 function loadChannel() { load(root_url + "/api/channels/", onLoadChannel); }
@@ -37,9 +39,8 @@ function onError(msg) {
 }
 function onCancel() {
 	place = 0;
-	if (run_dynamic_journey) {
-		run_dynamic_journey = false;
-		dynamic_journey_place = 0;
+	if (djs.active) {
+		djs.stop();
 	}
 	$("#menu-text").text("Dial Short Code");
 	$("#menu-entry").show();
@@ -57,7 +58,7 @@ function getText(menu) {
 
 function onOk() {
 	$("#inline-error").text("");
-	if (run_dynamic_journey) {
+	if (djs.active) {
 		dynamicJourneySimulator();
 	} else if (place === 0) {
 		loadRootMenu();
@@ -224,83 +225,18 @@ function loadDynamicJourney(e) {
 	var reader = new FileReader();
 	reader.onload = function(e) {
 		var contents = e.target.result;
-		parseXML(contents);
+		try {
+			djs.loadXML(contents);
+		} catch(e) {
+			if (e instanceof DJSException) {
+				$("#inline-error").text(e.message);
+			} else {
+				console.error(e);
+			}
+		}
+		
 	};
 	reader.readAsText(file);
-}
-
-function parseXML(xml) {
-	options = {
-		attributeNamePrefix : "@_",
-		attrNodeName: "attr", //default is 'false'
-		textNodeName : "#text",
-		ignoreAttributes : false,
-		ignoreNameSpace : false,
-		allowBooleanAttributes : false,
-		parseNodeValue : true,
-		parseAttributeValue : true,
-		trimValues: true,
-		cdataTagName: "__cdata", //default is 'false'
-		cdataPositionChar: "\\c",
-		parseTrueNumberOnly: false,
-		arrayMode: false, //"strict"
-		attrValueProcessor: (val, attrName) => he.decode(val, {isAttributeValue: true}),//default is a=>a
-		tagValueProcessor : (val, tagName) => he.decode(val), //default is a=>a
-		stopNodes: ["parse-me-as-string"]
-	};
-	dynamic_journey = parser.parse(xml,options);
-	if (dynamic_journey["ns0:createjourneyrequest"] === undefined) {
-		$("#inline-error").text("The dynamic journey file selected does not contain the expected xml schema.");
-		return;
-	}
-	instructions = dynamic_journey["ns0:createjourneyrequest"]["journeydefinition"]["instructions"]
-	buildDynamicJourneyMenu(instructions);
-}
-
-function buildDynamicJourneyMenu(instructions) {
-	if ('options' in instructions) {
-		let menu = {'text': '', 'options': []};
-		options = instructions['options']
-		menu['text'] = `${options["header"]["texts"]["text"]["attr"]["@_text"]}\n\n`;
-		
-		optionslist = options['optionslist'];
-
-		for (i in optionslist['option']) {
-			option = optionslist['option'][i];
-			display_index = parseInt(i) + 1;
-			menu['text'] = `${menu['text']}${display_index}. ${option["display"]["texts"]["text"]["attr"]["@_text"]}\n`;
-			submenu = {'text': '', 'options': []}
-			submenu_instructions = option["instructions"][1]["options"];
-			submenu_arguments = option["instructions"][0]["argument"]["attr"];
-			submenu['arguments'] = submenu_arguments;
-			submenu['text'] = `${submenu_instructions["header"]["texts"]["text"]["attr"]["@_text"]}\n\n`;
-
-			for (j in submenu_instructions['optionslist']['option']) {
-				submenu_option = submenu_instructions['optionslist']['option'][j];
-				display_index = parseInt(j) + 1;
-				submenu['text'] = `${submenu['text']}${display_index}. ${ submenu_option['display']['texts']['text']['attr']['@_text']}\n`;
-				
-				submenu['options'][j] = {};
-				submenu['options'][j]['arguments'] = submenu_option['instructions']['argument']['attr'];
-			}
-
-			menu['options'][i] = submenu;
-		}
-		dynamic_journey_menus.push(menu);
-	}
-
-	if ('instructions' in instructions) {
-		let menu = {'text': '', 'options': []};
-		option = instructions["instructions"]["options"];
-		menu['text'] = `${option['header']['text']['attr']['@_text']}\n\n`;
-		for (i in option['option']) {
-			submenu_option = option['option'][i];
-			display_index = parseInt(i) +1;
-			menu['text'] = `${menu['text']}${display_index}. ${submenu_option['display']['text']['attr']['@_text']}\n`;
-			menu['options'][i] = { 'text': submenu_option['instructions']['response']['texts']['text']['attr']['@_text'], 'end': true };
-		}
-		dynamic_journey_menus.push(menu);
-	}
 }
 
 function insertDynamicJourneyArguments(text) {
@@ -314,15 +250,16 @@ function insertDynamicJourneyArguments(text) {
 }
 
 function initiateDynamicJourneySimulator() {
-	if (dynamic_journey === null) {
+	if (!djs.ready) {
 		$("#inline-error").text("You need to upload a dynamic journey .xml file before you can run this simulation.");
 		return;
 	}
 	$("#inline-error").text("");
 	$("#menu-entry").val("");
-	run_dynamic_journey = true;
 
-	dynamic_journey_menu = dynamic_journey_menus[dynamic_journey_place];
+	djs.start();
+
+	dynamic_journey_menu = djs.next;
 
 	$("#menu-text").text(dynamic_journey_menu['text']);
 	$("#menu-entry").focus();
@@ -338,26 +275,21 @@ function dynamicJourneySimulator() {
 		return;
 	}
 
-	index = choice - 1;
-
-	if (index in dynamic_journey_menu['options']) {
-		dynamic_journey_menu = dynamic_journey_menu['options'][index];
-		if ('arguments' in dynamic_journey_menu) {
-			argument_key = dynamic_journey_menu['arguments']['@_key'].toLocaleLowerCase();
-			dynamic_journey_arguments[argument_key] = dynamic_journey_menu['arguments']['@_value'];
+	if (dynamic_journey_menu['response_type'] == "choice") {
+		try {
+			djs.setArgument(choice);
+		} catch(e) {
+			if (e instanceof DJSException) {
+				$("#inline-error").text(e.message);
+			} else {
+				console.error(e);
+			}
 		}
-		
-		if (!('text' in dynamic_journey_menu)) {
-			dynamic_journey_place++;
-			dynamic_journey_menu = dynamic_journey_menus[dynamic_journey_place];
-		}
-	} else {
-		$("#inline-error").text("Invalid option");
 	}
 
-	
+	dynamic_journey_menu = djs.next;
 
-	$("#menu-text").text(insertDynamicJourneyArguments(dynamic_journey_menu['text']));
+	$("#menu-text").text(djs.insertArguments(dynamic_journey_menu['text']));
 	$("#menu-entry").val("");
 	if ('end' in dynamic_journey_menu) {
 		$("#menu-entry").hide();
@@ -370,4 +302,3 @@ loadChannel();
 initKeyboardShortcuts();
 initClickEvents();
 $("#menu-entry").focus();
-loadDynamicJourney();
