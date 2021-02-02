@@ -35,7 +35,6 @@ class DJS {
 		while (match = re.exec(text)) {
 			let key = match.groups.argument.toLocaleLowerCase();
 			if(key in this.dynamicJourney['arguments']) {
-				console.log(this.dynamicJourney['arguments'][key]);
 				text = text.replace(match[0], this.dynamicJourney['arguments'][key]);
 			}
 		}

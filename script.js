@@ -239,16 +239,6 @@ function loadDynamicJourney(e) {
 	reader.readAsText(file);
 }
 
-function insertDynamicJourneyArguments(text) {
-	while (match = arg_regex.exec(text)) {
-		argument_key = match.groups.argument.toLocaleLowerCase();
-		if (argument_key in dynamic_journey_arguments) {
-			text = text.replace(match[0], dynamic_journey_arguments[argument_key]);
-		}
-	}
-	return text;
-}
-
 function initiateDynamicJourneySimulator() {
 	if (!djs.ready) {
 		$("#inline-error").text("You need to upload a dynamic journey .xml file before you can run this simulation.");
