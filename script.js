@@ -1,5 +1,5 @@
-//const root_url = "https://www.usehover.com";
-const root_url = "http://localhost:3000";
+const root_url = "https://www.usehover.com";
+//const root_url = "http://localhost:3000";
 const djs = new DJS();
 
 let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
