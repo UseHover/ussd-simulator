@@ -1,7 +1,7 @@
 // Dynamic Journey Schema parser
 class DJS {
 	constructor() {
-		this.dynamicJourney = { 'menus': [], 'arguments': {} };
+		this.dynamicJourney = { 'menus': [], 'arguments': {}, 'confirmation': {}};
 		this.menuIndex = 0;
 		this.active = false;
 	}
@@ -63,9 +63,12 @@ class DJS {
 		let doc = parser.parse(xml,options);
 
 		if (doc["ns0:createjourneyrequest"] === undefined) {
+			console.error("Error loading xml document: document doesn't contain the ns0:createjourneyrequest node");
 			throw new Error("The dynamic journey file selected does not contain the expected xml schema.");
 		}
 		let instructions = doc["ns0:createjourneyrequest"]["journeydefinition"]["instructions"];
+		console.log("loaded instructions:", instructions);
+
 		this.buildMenus(instructions);
 	}
 
@@ -80,18 +83,25 @@ class DJS {
 				menu['text'] = `${menu['text']}${optionIndex}. ${option['display']['texts']['text']['textmessage']}\n`;
 				menu['options'][i] = option['instructions']['argument'];
 			}
+
+			if('footer' in instructions['options']) {
+				menu['text'] = `${menu['text']}\n${instructions['options']['footer']['texts']['text']['textmessage']}`
+			}
+
 			this.dynamicJourney['menus'].push(menu);
 		}
 
 		if('question' in instructions) {
-			let menu = { 'text': '' };
-			menu['text'] = instructions['question']['display']['texts']['text']['textmessage'];
-			menu['response_type'] = instructions['question']['key'];
-			this.dynamicJourney['menus'].push(menu);
+			let confirmation = { 'text': '' };
+			confirmation['text'] = instructions['question']['display']['texts']['text']['textmessage'];
+			confirmation['response_type'] = instructions['question']['key'];
+			this.dynamicJourney['confirmation'] = confirmation;
 		}
 
-		let menu = { 'text': instructions['responsematching']['defaultresponse']['texts']['text']['textmessage'], 'response_type': 'info', 'end': true };
-		this.dynamicJourney['menus'].push(menu);
+		if ('responsematching' in instructions) {
+			let menu = { 'text': instructions['responsematching']['defaultresponse']['texts']['text']['textmessage'], 'response_type': 'info', 'end': true };
+			this.dynamicJourney['menus'].push(menu);
+		}
 	}
 }
 
