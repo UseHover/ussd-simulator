@@ -35,6 +35,7 @@ class DJS {
 		}
 
 		this.buildMenus();
+		console.log("Loading next menu:", this.activeMenu);
 		return this.activeMenu;
 	}
 
@@ -42,6 +43,7 @@ class DJS {
 		this.menuIndex = menuIndex;
 		let args = this.activeMenu['options'][this.menuIndex - 1];
 		this.arguments[args['key'].toLocaleLowerCase()] = args['value'];
+		console.log(`Argument ${args['key']} set to ${args['value']}`);
 	}
 
 	insertArguments(text) {
@@ -104,6 +106,8 @@ class DJS {
 			if('footer' in this.activeInstructions['options']) {
 				menu['text'] = `${menu['text']}\n${this.activeInstructions['options']['footer']['texts']['text']['textmessage']}`
 			}
+			console.log(`Active menu text set to ${menu['text']}`);
+			console.log("Options set to ", options);
 
 			this.activeMenu = menu;
 		} else if (!this.end && 'question' in this.instructions) {
@@ -111,11 +115,14 @@ class DJS {
 			let confirmation = { 'text': '' };
 			confirmation['text'] = this.instructions['question']['display']['texts']['text']['textmessage'];
 			confirmation['response_type'] = this.instructions['question']['key'];
+			console.log(`Final confirmation set to ${confirmation['text']}`);
 			this.activeMenu = confirmation;
 		} else if ('responsematching' in this.instructions) {
 			let menu = { 'text': this.instructions['responsematching']['defaultresponse']['texts']['text']['textmessage'], 'response_type': 'info', 'end': true };
+			console.log(`Final response set to ${menu['text']}`);
 			this.activeMenu = menu;
 		} else {
+			console.log("Missing final response, setting generic response.")
 			let menu = { 'text': 'Your request has been received!', 'response_type': 'info', 'end': true };
 			this.activeMenu = menu;
 		}
