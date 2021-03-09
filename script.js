@@ -261,6 +261,7 @@ function dynamicJourneySimulator() {
 	choice = $("#menu-entry").val();
 
 	if (choice === 'end') {
+		djs.stop();
 		$("#cancel-btn").click();
 		return;
 	}
@@ -284,6 +285,7 @@ function dynamicJourneySimulator() {
 	if ('end' in dynamic_journey_menu) {
 		$("#menu-entry").hide();
 		$("#menu-entry").val("end");
+
 	}
 	$("#menu-entry").focus();
 }

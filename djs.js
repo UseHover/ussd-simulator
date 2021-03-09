@@ -1,32 +1,47 @@
 // Dynamic Journey Schema parser
 class DJS {
 	constructor() {
-		this.dynamicJourney = { 'menus': [], 'arguments': {}, 'confirmation': {}};
-		this.menuIndex = 0;
+		this.arguments = {};
+		this.activeMenu = {};
+		this.activeInstructions = {};
 		this.active = false;
+		this.end = false;
+		this.finalConfirmation = {};
+		this.finalResponse = {};
+		this.menuIndex = 0;
+		this.instructions = {}
 	}
 
 	get ready() {
-		return this.dynamicJourney['menus'] != 0;
+		return "options" in this.activeInstructions;
 	}
 
 	start() {
+		this.end = false;
 		this.active = true;
 	}
 
 	stop() {
 		this.active = false;
 		this.menuIndex = 0;
-		this.dynamicJourney['arguments'] = {};
+		this.arguments = {};
+		this.activeInstructions = this.instructions;
 	}
 
 	get next() {
-		return this.dynamicJourney['menus'][this.menuIndex++];
+		if (this.menuIndex != 0 && 'options' in this.activeInstructions) {
+			let instructions = this.activeInstructions['options']['optionslist']['option'][this.menuIndex-1]['instructions'];
+			this.activeInstructions = instructions;
+		}
+
+		this.buildMenus();
+		return this.activeMenu;
 	}
 
-	setArgument(menuChoice) {
-		let args = this.dynamicJourney['menus'][this.menuIndex - 1]['options'][menuChoice-1];
-		this.dynamicJourney['arguments'][args['key']] = args['value'];
+	setArgument(menuIndex) {
+		this.menuIndex = menuIndex;
+		let args = this.activeMenu['options'][this.menuIndex - 1];
+		this.arguments[args['key'].toLocaleLowerCase()] = args['value'];
 	}
 
 	insertArguments(text) {
@@ -34,8 +49,8 @@ class DJS {
 		let match;
 		while (match = re.exec(text)) {
 			let key = match.groups.argument.toLocaleLowerCase();
-			if(key in this.dynamicJourney['arguments']) {
-				text = text.replace(match[0], this.dynamicJourney['arguments'][key]);
+			if(key in this.arguments) {
+				text = text.replace(match[0], this.arguments[key]);
 			}
 		}
 		return text;
@@ -66,17 +81,19 @@ class DJS {
 			console.error("Error loading xml document: document doesn't contain the ns0:createjourneyrequest node");
 			throw new Error("The dynamic journey file selected does not contain the expected xml schema.");
 		}
-		let instructions = doc["ns0:createjourneyrequest"]["journeydefinition"]["instructions"];
-		console.log("loaded instructions:", instructions);
-
-		this.buildMenus(instructions);
+		this.instructions = doc["ns0:createjourneyrequest"]["journeydefinition"]["instructions"];
+		this.activeInstructions = this.instructions;
+		console.log("loaded instructions:", this.instructions);
 	}
 
-	buildMenus(instructions) {
-		if('options' in instructions) {
+	buildMenus() {
+		if ('options' in this.activeInstructions) {
 			let menu = {'text': '', 'response_type': 'choice', 'options': []};
-			menu['text'] = `${instructions['options']['header']['texts']['text']['textmessage']}\n\n`;
-			let options = instructions['options']['optionslist']['option'];
+			if ('header' in this.activeInstructions['options']) {
+				menu['text'] = `${this.activeInstructions['options']['header']['texts']['text']['textmessage']}\n\n`;
+			}
+
+			let options = this.activeInstructions['options']['optionslist']['option'];
 			for(let i in options) {
 				let option = options[i];
 				let optionIndex = parseInt(i) + 1;
@@ -84,23 +101,23 @@ class DJS {
 				menu['options'][i] = option['instructions']['argument'];
 			}
 
-			if('footer' in instructions['options']) {
-				menu['text'] = `${menu['text']}\n${instructions['options']['footer']['texts']['text']['textmessage']}`
+			if('footer' in this.activeInstructions['options']) {
+				menu['text'] = `${menu['text']}\n${this.activeInstructions['options']['footer']['texts']['text']['textmessage']}`
 			}
 
-			this.dynamicJourney['menus'].push(menu);
-		}
-
-		if('question' in instructions) {
+			this.activeMenu = menu;
+		} else if (!this.end && 'question' in this.instructions) {
+			this.end = true;
 			let confirmation = { 'text': '' };
-			confirmation['text'] = instructions['question']['display']['texts']['text']['textmessage'];
-			confirmation['response_type'] = instructions['question']['key'];
-			this.dynamicJourney['confirmation'] = confirmation;
-		}
-
-		if ('responsematching' in instructions) {
-			let menu = { 'text': instructions['responsematching']['defaultresponse']['texts']['text']['textmessage'], 'response_type': 'info', 'end': true };
-			this.dynamicJourney['menus'].push(menu);
+			confirmation['text'] = this.instructions['question']['display']['texts']['text']['textmessage'];
+			confirmation['response_type'] = this.instructions['question']['key'];
+			this.activeMenu = confirmation;
+		} else if ('responsematching' in this.instructions) {
+			let menu = { 'text': this.instructions['responsematching']['defaultresponse']['texts']['text']['textmessage'], 'response_type': 'info', 'end': true };
+			this.activeMenu = menu;
+		} else {
+			let menu = { 'text': 'Your request has been received!', 'response_type': 'info', 'end': true };
+			this.activeMenu = menu;
 		}
 	}
 }
