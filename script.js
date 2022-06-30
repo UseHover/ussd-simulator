@@ -12,8 +12,8 @@ function load(url, callback) { $.ajax({type: "GET", url: url, success: callback,
 function loadChannel() { load(root_url + "/api/channels/", onLoadChannel); }
 function loadMenu(id) {
 	$.getJSON("./menus.json", function(data) {
-		onLoadMenu(data.map(function(d) { return d.attributes; }).find(e => e.id == id));
-		loadChildren(data, id);
+		onLoadMenu(data.responseJSON.map(function(d) { return d.attributes; }).find(e => e.id == id));
+		loadChildren(data.responseJSON, id);
 	});
 }
 function loadChildren(data, menu_id) { child_menus = data.map(function(d) { return d.attributes; }).filter(e => e.parent_menu_id == menu_id); }
