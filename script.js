@@ -1,6 +1,7 @@
-const root_url = "https://www.usehover.com";
+const root_url = "https://stage.usehover.com";
 //const root_url = "http://localhost:3000";
 const djs = new DJS();
+const dynamic_journey_api = "https://hover-public.s3.amazonaws.com/shoe-menu.xml";
 
 let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
 let dynamic_journey_menus = [], dynamic_journey_arguments = {}, dynamic_journey_menu = null, dynamic_journey_place = 0;
@@ -10,15 +11,16 @@ let arg_regex = /\$(?<argument>\w+)/g;
 function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
 function loadChannel() { load(root_url + "/api/channels/", onLoadChannel); }
 function loadMenu(id) {
-	load(root_url + "/api/menus/" + id, onLoadMenu);  
-	loadChildren(id);
+	$.getJSON("./menus.json", function(data) {
+		onLoadMenu(data.map(function(d) { return d.attributes; }).find(e => e.id == id));
+		loadChildren(data, id);
+	});
 }
-function loadChildren(menu_id) { load(root_url + "/api/menus?parent_id=" + menu_id, onLoadChildren); }
+function loadChildren(data, menu_id) { child_menus = data.map(function(d) { return d.attributes; }).filter(e => e.parent_menu_id == menu_id); }
 
 function onLoadChannel(result) { channels = result.data.map(function(d) { return d.attributes; }); }
 
-function onLoadMenu(result) {
-	menu = result.data.attributes;
+function onLoadMenu(menu) {
 	$("#menu-text").text(getText(menu));
 	$("#menu-entry").val("");
 	if (menu.response_type == "info") {
@@ -26,10 +28,6 @@ function onLoadMenu(result) {
 		$("#cancel-btn").hide();
 		$("#ok-btn").click(onCancel);
 	}
-}
-
-function onLoadChildren(result) {
-	child_menus = result.data.map(function(d) { return d.attributes; });
 }
 
 function onError(msg) { 
