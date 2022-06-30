@@ -11,9 +11,9 @@ let arg_regex = /\$(?<argument>\w+)/g;
 function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
 function loadChannel() { load(root_url + "/api/channels/", onLoadChannel); }
 function loadMenu(id) {
-	$.getJSON("./menus.json", function(data) {
-		onLoadMenu(data.responseJSON.map(function(d) { return d.attributes; }).find(e => e.id == id));
-		loadChildren(data.responseJSON, id);
+	$.getJSON("./menus.json", function(result) {
+		onLoadMenu(result.data.map(function(d) { return d.attributes; }).find(e => e.id == id));
+		loadChildren(result.data, id);
 	});
 }
 function loadChildren(data, menu_id) { child_menus = data.map(function(d) { return d.attributes; }).filter(e => e.parent_menu_id == menu_id); }
