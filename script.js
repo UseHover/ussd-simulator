@@ -20,7 +20,8 @@ function loadChildren(data, menu_id) { child_menus = data.map(function(d) { retu
 
 function onLoadChannel(result) { channels = result.data.map(function(d) { return d.attributes; }); }
 
-function onLoadMenu(menu) {
+function onLoadMenu(m) {
+	menu = m;
 	$("#menu-text").text(getText(menu));
 	$("#menu-entry").val("");
 	if (menu.response_type == "info") {
