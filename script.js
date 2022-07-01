@@ -1,4 +1,4 @@
-const root_url = "https://stage.usehover.com";
+const root_url = "https://www.usehover.com";
 //const root_url = "http://localhost:3000";
 const djs = new DJS();
 const dynamic_journey_api = "https://hover-public.s3.amazonaws.com/shoe-menu.xml";
