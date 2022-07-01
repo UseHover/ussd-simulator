@@ -12,7 +12,8 @@ function load(url, callback) { $.ajax({type: "GET", url: url, success: callback,
 function loadChannel() { load(root_url + "/api/channels/", onLoadChannel); }
 function loadMenu(id) {
 	$.getJSON("./menus.json", function(result) {
-		onLoadMenu(result.data.map(function(d) { return d.attributes; }).find(e => e.id == id));
+		menu = result.data.map(function(d) { return d.attributes; }).find(e => e.id == id);
+		onLoadMenu(menu);
 		loadChildren(result.data, id);
 	});
 }
@@ -21,10 +22,9 @@ function loadChildren(data, menu_id) { child_menus = data.map(function(d) { retu
 function onLoadChannel(result) { channels = result.data.map(function(d) { return d.attributes; }); }
 
 function onLoadMenu(m) {
-	menu = m;
-	$("#menu-text").text(getText(menu));
+	$("#menu-text").text(getText(m));
 	$("#menu-entry").val("");
-	if (menu.response_type == "info") {
+	if (m.response_type == "info") {
 		$("#menu-entry").hide();
 		$("#cancel-btn").hide();
 		$("#ok-btn").click(onCancel);
@@ -111,9 +111,9 @@ function submitVar(key, entry) {
 
 function getStateDependantChildren() {
 	if (child_menus[0].code)
-		return child_menus.filter(menu => $("#registered-toggle").prop("checked") ? menu.code !== 300 : menu.code === 300);
+		return child_menus.filter(m => $("#registered-toggle").prop("checked") ? m.code !== 300 : m.code === 300);
 	else
-		return child_menus.filter(menu => $("#registered-toggle").prop("checked") ? menu.parent_index >= 0 : menu.parent_index < 0);
+		return child_menus.filter(m => $("#registered-toggle").prop("checked") ? m.parent_index >= 0 : m.parent_index < 0);
 }
 
 function onStyleChange(e) { setStyle(e.target.value); }
