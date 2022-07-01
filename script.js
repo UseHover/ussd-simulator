@@ -3,13 +3,13 @@ const root_url = "https://www.usehover.com";
 const djs = new DJS();
 const dynamic_journey_api = "https://hover-public.s3.amazonaws.com/shoe-menu.xml";
 
-let channels = [], menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
+let channel = {}, menu = null, child_menus = [], place = 0, vars = {}, mode = "android";
 let dynamic_journey_menus = [], dynamic_journey_arguments = {}, dynamic_journey_menu = null, dynamic_journey_place = 0;
 let arg_regex = /\$(?<argument>\w+)/g;
 
 
 function load(url, callback) { $.ajax({type: "GET", url: url, success: callback, error: function() { onError("Network error"); } }); }
-function loadChannel() { load(root_url + "/api/channels/", onLoadChannel); }
+function loadChannel() { load(root_url + "/api/channels/1", onLoadChannel); }
 function loadMenu(id) {
 	$.getJSON("./menus.json", function(result) {
 		menu = result.data.map(function(d) { return d.attributes; }).find(e => e.id == id);
@@ -19,7 +19,7 @@ function loadMenu(id) {
 }
 function loadChildren(data, menu_id) { child_menus = data.map(function(d) { return d.attributes; }).filter(e => e.parent_menu_id == menu_id); }
 
-function onLoadChannel(result) { channels = result.data.map(function(d) { return d.attributes; }); }
+function onLoadChannel(result) { channel = result.data.attributes; }
 
 function onLoadMenu(m) {
 	$("#menu-text").text(getText(m));
@@ -70,7 +70,7 @@ function onOk() {
 function loadRootMenu() {
 	if (channelExists()) {
 		place = 1;
-		loadMenu(channelExists().first_menu_id);
+		loadMenu(channel.first_menu_id);
 	} else {
 		onError("Short code does not exist");
 	}
@@ -86,7 +86,7 @@ function submitResponse() {
 	} else { onError("Invalid option or missing data"); }
 }
 
-function channelExists() { return channels.find(el => el.root_code === $("#menu-entry").val().trim()); }
+function channelExists() { return channel.root_code === $("#menu-entry").val().trim(); }
 function submenuExists() { return child_menus.find(el => el.parent_index.toString() === $("#menu-entry").val().trim()); }
 
 function submitVar(key, entry) {
