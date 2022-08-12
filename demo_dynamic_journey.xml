@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:createjourneyrequest xmlns:ns0="http://www.ericsson.com/em/djs/journey/v1_0/frontend/provider/">
+   <category>ShoeMarket</category>
+   <description>Selling Shoes</description>
+   <journeydefinition>
+      <instructions>
+         <options>
+            <header>
+               <texts>
+                  <text languagecode="en" text="Please Select Your Shoes Colour ">
+                     <textmessage>Please Select Your Shoes Colour</textmessage>
+                  </text>
+               </texts>
+            </header>
+            <optionslist>
+               <option>
+                  <display>
+                     <texts>
+                        <text languagecode="en" text="Red Shoes">
+                           <textmessage>Red Shoes</textmessage>
+                        </text>
+                     </texts>
+                  </display>
+                  <instructions>
+                     <argument key="Colour" value="RED">
+                        <key>Colour</key>
+                        <value>RED</value>
+                     </argument>
+                     <options>
+                        <header>
+                           <texts>
+                              <text languagecode="en" text="Select Your Shoes Size ">
+                                 <textmessage>Select Your Shoes Size</textmessage>
+                              </text>
+                           </texts>
+                        </header>
+                        <optionslist>
+                           <option>
+                              <display>
+                                 <texts>
+                                    <text languagecode="en" text="Size 9 30EUR">
+                                       <textmessage>Size 9 30EUR</textmessage>
+                                    </text>
+                                 </texts>
+                              </display>
+                              <instructions>
+                                 <argument key="amount" value="30">
+                                    <key>amount</key>
+                                    <value>30</value>
+                                 </argument>
+                                 <options>
+                                    <header>
+                                       <texts>
+                                          <text languagecode="en" text="Final Confirmation">
+                                             <textmessage>Final Confirmation</textmessage>
+                                          </text>
+                                       </texts>
+                                    </header>
+                                    <optionslist>
+                                       <option>
+                                          <display>
+                                             <texts>
+                                                <text languagecode="en" text="Please confirm Purchase of $Color Shoes @ $Amount">
+                                                   <textmessage>Please confirm Purchase of ${Colour} Shoes ${amount}</textmessage>
+                                                </text>
+                                             </texts>
+                                          </display>
+                                          <instructions>
+                                             <argument key="agree" value="true">
+                                                <key>agree</key>
+                                                <value>true</value>
+                                             </argument>
+                                             <responsematching>
+                                                <defaultresponse>
+                                                   <texts>
+                                                      <text languagecode="en" text="Your order for $COLOUR Shoes has been placed.">
+                                                         <textmessage>Your order for ${Colour} Shoes has been placed.</textmessage>
+                                                      </text>
+                                                   </texts>
+                                                </defaultresponse>
+                                             </responsematching>
+                                          </instructions>
+                                       </option>
+                                       <option>
+                                          <display>
+                                             <texts>
+                                                <text languagecode="en" text="Cancel">
+                                                   <textmessage>Cancel</textmessage>
+                                                </text>
+                                             </texts>
+                                          </display>
+                                          <instructions>
+                                             <argument key="agree" value="false">
+                                                <key>agree</key>
+                                                <value>false</value>
+                                             </argument>
+                                             <responsematching>
+                                                <defaultresponse>
+                                                   <texts>
+                                                      <text languagecode="en" text="Order is cancelled.">
+                                                         <textmessage>Order is cancelled.</textmessage>
+                                                      </text>
+                                                   </texts>
+                                                </defaultresponse>
+                                             </responsematching>
+                                          </instructions>
+                                       </option>
+                                    </optionslist>
+                                 </options>
+                              </instructions>
+                           </option>
+                           <option>
+                              <display>
+                                 <texts>
+                                    <text languagecode="en" text="Size 14 40EUR">
+                                       <textmessage>Size 14 40EUR</textmessage>
+                                    </text>
+                                 </texts>
+                              </display>
+                              <instructions>
+                                 <argument key="amount" value="40">
+                                    <key>amount</key>
+                                    <value>40</value>
+                                 </argument>
+                              </instructions>
+                           </option>
+                           <option>
+                              <display>
+                                 <texts>
+                                    <text languagecode="en" text="Size 20 50EUR">
+                                       <textmessage>Size 20 50EUR</textmessage>
+                                    </text>
+                                 </texts>
+                              </display>
+                              <instructions>
+                                 <argument key="amount" value="50">
+                                    <key>amount</key>
+                                    <value>50</value>
+                                 </argument>
+                              </instructions>
+                           </option>
+                        </optionslist>
+                     </options>
+                  </instructions>
+               </option>
+               <option>
+                  <display>
+                     <texts>
+                        <text languagecode="en" text="Blue Shoes">
+                           <textmessage>Blue Shoes</textmessage>
+                        </text>
+                     </texts>
+                  </display>
+                  <instructions>
+                     <argument key="Colour" value="BLUE">
+                        <key>Colour</key>
+                        <value>BLUE</value>
+                     </argument>
+                     <options>
+                        <header>
+                           <texts>
+                              <text languagecode="en" text="Select Your Shoes Size ">
+                                 <textmessage>Select Your Shoes Size</textmessage>
+                              </text>
+                           </texts>
+                        </header>
+                        <optionslist>
+                           <option>
+                              <display>
+                                 <texts>
+                                    <text languagecode="en" text="Size 9 60EUR">
+                                       <textmessage>Size 9 60EUR</textmessage>
+                                    </text>
+                                 </texts>
+                              </display>
+                              <instructions>
+                                 <argument key="amount" value="60">
+                                    <key>amount</key>
+                                    <value>60</value>
+                                 </argument>
+                              </instructions>
+                           </option>
+                           <option>
+                              <display>
+                                 <texts>
+                                    <text languagecode="en" text="Size 14 70EUR">
+                                       <textmessage>Size 14 70EUR</textmessage>
+                                    </text>
+                                 </texts>
+                              </display>
+                              <instructions>
+                                 <argument key="amount" value="70">
+                                    <key>amount</key>
+                                    <value>70</value>
+                                 </argument>
+                              </instructions>
+                           </option>
+                           <option>
+                              <display>
+                                 <texts>
+                                    <text languagecode="en" text="Size 20 80EUR">
+                                       <textmessage>Size 20 80EUR</textmessage>
+                                    </text>
+                                 </texts>
+                              </display>
+                              <instructions>
+                                 <argument key="amount" value="80">
+                                    <key>amount</key>
+                                    <value>80</value>
+                                 </argument>
+                              </instructions>
+                           </option>
+                        </optionslist>
+                     </options>
+                  </instructions>
+               </option>
+               <option>
+                  <display>
+                     <texts>
+                        <text languagecode="en" text="Green Shoes">
+                           <textmessage>Green Shoes</textmessage>
+                        </text>
+                     </texts>
+                  </display>
+                  <instructions>
+                     <argument key="Colour" value="GREEN">
+                        <key>Colour</key>
+                        <value>GREEN</value>
+                     </argument>
+                     <options>
+                        <header>
+                           <texts>
+                              <text languagecode="en" text="Select Your Shoes Size ">
+                                 <textmessage>Select Your Shoes Size</textmessage>
+                              </text>
+                           </texts>
+                        </header>
+                        <optionslist>
+                           <option>
+                              <display>
+                                 <texts>
+                                    <text languagecode="en" text="Size 9 90EUR">
+                                       <textmessage>Size 9 90EUR</textmessage>
+                                    </text>
+                                 </texts>
+                              </display>
+                              <instructions>
+                                 <argument key="amount" value="90">
+                                    <key>amount</key>
+                                    <value>90</value>
+                                 </argument>
+                              </instructions>
+                           </option>
+                           <option>
+                              <display>
+                                 <texts>
+                                    <text languagecode="en" text="Size 14 100EUR">
+                                       <textmessage>Size 14 100EUR</textmessage>
+                                    </text>
+                                 </texts>
+                              </display>
+                              <instructions>
+                                 <argument key="amount" value="100">
+                                    <key>amount</key>
+                                    <value>100</value>
+                                 </argument>
+                              </instructions>
+                           </option>
+                           <option>
+                              <display>
+                                 <texts>
+                                    <text languagecode="en" text="Size 20 110EUR">
+                                       <textmessage>Size 20 110EUR</textmessage>
+                                    </text>
+                                 </texts>
+                              </display>
+                              <instructions>
+                                 <argument key="amount" value="110">
+                                    <key>amount</key>
+                                    <value>110</value>
+                                 </argument>
+                              </instructions>
+                           </option>
+                        </optionslist>
+                     </options>
+                  </instructions>
+               </option>
+            </optionslist>
+         </options>
+      </instructions>
+   </journeydefinition>
+</ns0:createjourneyrequest>

@@ -31,7 +31,7 @@ class DJS {
 	get next() {
 		if (this.menuIndex != 0 && 'options' in this.activeInstructions) {
 			let instructions = this.activeInstructions['options']['optionslist']['option'][this.menuIndex-1]['instructions'];
-			this.activeInstructions = instructions;
+			this.activeInstructions = this.instructions = instructions;
 		}
 
 		this.buildMenus();
